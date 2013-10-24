@@ -33,7 +33,7 @@ namespace FastSolutionEvaluator
             {
 
                 var sln = new SolutionMeta();
-                sln.StudentName = directory.ToLower().Replace("examen", "").Split('\\').Last();
+                sln.FolderName = directory;
 
                 //Find .sln file
                 var res = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
@@ -79,11 +79,11 @@ namespace FastSolutionEvaluator
 
     class SolutionMeta
     {
-        public string StudentName { get; set; }
-        public string ErrorInfo { get; set; }
+        public string FolderName { get; set; }
+
         public override string ToString()
         {
-            return StudentName + "(" + ErrorInfo + ")";
+            return FolderName;
         }
 
         public List<CSFile> CSFiles { get; set; }
