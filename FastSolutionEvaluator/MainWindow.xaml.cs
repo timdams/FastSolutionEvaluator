@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Win32;
 
 namespace FastSolutionEvaluator
 {
@@ -28,40 +29,47 @@ namespace FastSolutionEvaluator
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            var allslns = new List<SolutionMeta>();
-            foreach (var directory in Directory.GetDirectories("TEST"))
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
-                var sln = new SolutionMeta();
-                sln.FolderName = directory;
-
-                //Find .sln file
-                var res = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
-                foreach (var re in res)
+                var allslns = new List<SolutionMeta>();
+                foreach (var directory in Directory.GetDirectories(dialog.SelectedPath))
                 {
-                    var cs = new CSFile();
-                    cs.FileName = re.Split('\\').Last();
-                    if (cs.FileName.Contains("AssemblyInfo") || cs.FileName.Contains("TemporaryGeneratedFile"))
-                        continue;
-                    cs.Content=  File.ReadAllText(re);
-                    sln.CSFiles.Add(cs);
+
+                    var sln = new SolutionMeta();
+                    sln.FolderName = directory;
+
+                    //Find .sln file
+                    var res = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
+                    foreach (var re in res)
+                    {
+                        var cs = new CSFile();
+                        cs.FileName = re.Split('\\').Last();
+                        if (cs.FileName.Contains("AssemblyInfo") || cs.FileName.Contains("TemporaryGeneratedFile"))
+                            continue;
+                        cs.Content = File.ReadAllText(re);
+                        sln.CSFiles.Add(cs);
+                    }
+                    //Sort
+                    sln.CSFiles =
+                        sln.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs"))
+                           .ThenBy(p => p.FileName)
+                           .ToList();
+
+
+
+                    allslns.Add(sln);
                 }
-                   //Sort
-              sln.CSFiles=  sln.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs")).ThenBy(p => p.FileName).ToList();
-               
 
-
-                allslns.Add(sln);
+                lbSLNS.ItemsSource = allslns;
             }
-
-            lbSLNS.ItemsSource = allslns;
-
         }
 
         private void LbSLNS_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lbSLNS.SelectedIndex != -1)
-            {   
+            {
                 lbFilesInSLN.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).CSFiles;
                 if (lbFilesInSLN.Items.Count > 0)
                     lbFilesInSLN.SelectedIndex = 0;
@@ -91,7 +99,7 @@ namespace FastSolutionEvaluator
 
         public SolutionMeta()
         {
-            CSFiles= new List<CSFile>();
+            CSFiles = new List<CSFile>();
         }
     }
     class CSFile
