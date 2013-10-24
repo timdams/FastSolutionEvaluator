@@ -1,0 +1,26 @@
+﻿<Window x:Class="FastSolutionEvaluator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Name="btnLoad" Click="btnLoad_Click">Load solutions</Button>
+        </StackPanel>
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ListBox Name="lbFilesInSLN"></ListBox>
+            <TextBlock Name="codeView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1"></TextBlock>
+
+        </Grid>
+        
+    </Grid>
+</Window>
