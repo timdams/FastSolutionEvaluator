@@ -45,12 +45,14 @@ namespace FastSolutionEvaluator
     }
     class CSFile
     {
-        public string FileName { get; set; }
+        public string FileName { get { return System.IO.Path.GetFileName(Path); } }
         public string Content { get; set; }
 
         public override string ToString()
         {
             return FileName;
         }
+
+        public string Path { get; set; }
     }
 }
