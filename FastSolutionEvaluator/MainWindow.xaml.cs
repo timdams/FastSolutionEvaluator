@@ -120,7 +120,7 @@ namespace FastSolutionEvaluator
             }
         }
 
-
+        private Process compiler;
         private void TryRunBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (lbFilesInSLN.SelectedIndex != -1)
@@ -181,25 +181,9 @@ namespace FastSolutionEvaluator
                         lbLog.Items.Insert(0, string.Format(string.Format(" built into {0} successfully.", res.PathToAssembly)));
                         
                         
-                        //Let's run this shit:
-                        Process compiler = new Process();
-                        compiler.StartInfo.FileName = "test.exe";
+                       theConsole.StartProcess("test.exe","ok");
                         
-                        compiler.StartInfo.UseShellExecute = false;
-                        compiler.StartInfo.RedirectStandardOutput = true;
-
-                        compiler.OutputDataReceived += new DataReceivedEventHandler(ProcessOuputHandler);
-                        compiler.Start();
-                        compiler.BeginOutputReadLine();
-                        //tbRunoutput.Text =compiler.StandardOutput.ReadToEnd();
-                        while (!compiler.HasExited)
-                        {
-                            // Refresh you're WPF window here
-                            this.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
-                            Thread.Sleep(1000);
-                        }
-                        
-                        compiler.Close();
+                       
 
                     }
                 }
@@ -215,37 +199,11 @@ namespace FastSolutionEvaluator
             }
         }
 
-        public void ProcessOuputHandler(object sendingProcess, DataReceivedEventArgs outLine)
-        {
-            if (!String.IsNullOrEmpty(outLine.Data))
-            {
-                if (!lbRunoutput.Dispatcher.CheckAccess())
-                {
-                    // Called from a none ui thread, so use dispatcher
-                    ShowLoggingDelegate showLoggingDelegate = new ShowLoggingDelegate(ShowLogging);
-                    lbRunoutput.Dispatcher.Invoke(DispatcherPriority.Normal, showLoggingDelegate, outLine.Data);
-                }
-                else
-                {
-                    // Called from UI trhead so just update the textbox
-                    ShowLogging(outLine.Data);
-                };
-            }
-        }
 
-        private delegate void ShowLoggingDelegate(string text);
-        private static Action EmptyDelegate = delegate() { };
 
-        /// <summary>
-        /// Show the logging on screen
-        /// </summary>
-        /// <param name="text"></param>
-        private void ShowLogging(string text)
-        {
-            lbRunoutput.Items.Add(text);
-
-        }
+  
+    
     }
 
-
+    //GOGO: http://www.codeproject.com/Articles/335909/Embedding-a-Console-in-a-C-Application
 }
