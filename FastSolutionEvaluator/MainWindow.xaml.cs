@@ -34,32 +34,45 @@ namespace FastSolutionEvaluator
             {
 
                 var allslns = new List<SolutionMeta>();
-                foreach (var directory in Directory.GetDirectories(dialog.SelectedPath))
+                foreach (var directory in Directory.GetDirectories(dialog.SelectedPath, "*.*", SearchOption.AllDirectories))
                 {
-
-                    var sln = new SolutionMeta();
-                    sln.FolderName = directory;
-
-                    //Find .sln file
-                    var res = Directory.GetFiles(directory, "*.cs", SearchOption.AllDirectories);
-                    foreach (var re in res)
+                    if (Directory.GetFiles(directory,"*.sln").Count() > 0)
                     {
-                        var cs = new CSFile();
-                        cs.FileName = re.Split('\\').Last();
-                        if (cs.FileName.Contains("AssemblyInfo") || cs.FileName.Contains("TemporaryGeneratedFile"))
-                            continue;
-                        cs.Content = File.ReadAllText(re);
-                        sln.CSFiles.Add(cs);
+                        var sln = new SolutionMeta();
+                        sln.FolderName = directory;
+
+                        //Find .csproj file 
+                        //Improve: parse this info from .sln file
+                        var respr = Directory.GetFiles(directory, "*.csproj", SearchOption.AllDirectories);
+                        foreach (var proj in respr)
+                        {
+                            var project = new CSPROJ();
+                            project.FileName = proj.Split('\\').Last();
+
+
+
+                            var res = Directory.GetFiles( System.IO.Path.GetDirectoryName(proj), "*.cs", SearchOption.AllDirectories);
+                            foreach (var re in res)
+                            {
+                                var cs = new CSFile();
+                                cs.FileName = re.Split('\\').Last();
+                                if (cs.FileName.Contains("AssemblyInfo") ||
+                                    cs.FileName.Contains("TemporaryGeneratedFile"))
+                                    continue;
+                                cs.Content = File.ReadAllText(re);
+                                project.CSFiles.Add(cs);
+                            }
+                            project.CSFiles =
+                                project.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs"))
+                                       .ThenBy(p => p.FileName)
+                                       .ToList();
+
+                            sln.Csprojs.Add(project);
+
+                        }
+                        allslns.Add(sln);
                     }
-                    //Sort
-                    sln.CSFiles =
-                        sln.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs"))
-                           .ThenBy(p => p.FileName)
-                           .ToList();
 
-
-
-                    allslns.Add(sln);
                 }
 
                 lbSLNS.ItemsSource = allslns;
@@ -70,7 +83,17 @@ namespace FastSolutionEvaluator
         {
             if (lbSLNS.SelectedIndex != -1)
             {
-                lbFilesInSLN.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).CSFiles;
+                lbPROJS.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).Csprojs;
+                if (lbPROJS.Items.Count > 0)
+                    lbPROJS.SelectedIndex = 0;
+            }
+        }
+
+        private void LbPROJS_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbPROJS.SelectedIndex != -1)
+            {
+                lbFilesInSLN.ItemsSource = (lbPROJS.SelectedItem as CSPROJ).CSFiles;
                 if (lbFilesInSLN.Items.Count > 0)
                     lbFilesInSLN.SelectedIndex = 0;
             }
@@ -83,6 +106,8 @@ namespace FastSolutionEvaluator
                 fileView.Text = (lbFilesInSLN.SelectedItem as CSFile).Content;
             }
         }
+
+
     }
 
     class SolutionMeta
@@ -94,12 +119,29 @@ namespace FastSolutionEvaluator
             return FolderName;
         }
 
-        public List<CSFile> CSFiles { get; set; }
-
+        public List<CSPROJ> Csprojs { get; set; }
 
         public SolutionMeta()
         {
+            Csprojs = new List<CSPROJ>();
+        }
+
+
+
+    }
+
+    class CSPROJ
+    {
+        public string FileName { get; set; }
+        public List<CSFile> CSFiles { get; set; }
+        public CSPROJ()
+        {
             CSFiles = new List<CSFile>();
+        }
+
+        public override string ToString()
+        {
+            return FileName.Split('\\').Last();
         }
     }
     class CSFile

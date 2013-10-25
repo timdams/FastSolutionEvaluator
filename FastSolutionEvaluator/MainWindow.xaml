@@ -16,10 +16,12 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged"></ListBox>
-            <ListBox Name="lbFilesInSLN" Grid.Column="1" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
-            <TextBlock Name="fileView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2"></TextBlock>
+            <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
+            <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
+            <TextBlock Name="fileView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3"></TextBlock>
 
         </Grid>
         
