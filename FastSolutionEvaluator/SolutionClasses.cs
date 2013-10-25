@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,10 @@ namespace FastSolutionEvaluator
 {
     class SolutionMeta
     {
-        public string FolderName { get; set; }
+
+        public string FullPath { get; set; }
+
+        public string FolderName { get { return Path.GetFileName(FullPath); } }
 
         public override string ToString()
         {
@@ -17,8 +21,9 @@ namespace FastSolutionEvaluator
 
         public List<CSPROJ> Csprojs { get; set; }
 
-        public SolutionMeta()
+        public SolutionMeta(string path)
         {
+            FullPath = path;
             Csprojs = new List<CSPROJ>();
         }
 
@@ -35,7 +40,7 @@ namespace FastSolutionEvaluator
 
         public override string ToString()
         {
-            return FileName.Split('\\').Last();
+            return FileName.Split('\\').Last().Replace(".csproj","");
         }
     }
     class CSFile

@@ -46,8 +46,8 @@ namespace FastSolutionEvaluator
                 {
                     if (Directory.GetFiles(directory,"*.sln").Count() > 0)
                     {
-                        var sln = new SolutionMeta();
-                        sln.FolderName = directory;
+                        var sln = new SolutionMeta(directory);
+                        
 
                         //Find .csproj file 
                         //Improve: parse this info from .sln file
