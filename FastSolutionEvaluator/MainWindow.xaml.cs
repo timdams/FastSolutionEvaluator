@@ -139,6 +139,7 @@ namespace FastSolutionEvaluator
 
                 // Add an assembly reference.
                 cp.ReferencedAssemblies.Add("System.dll");
+                cp.ReferencedAssemblies.Add("System.Core.dll");
 
                 // Save the assembly as a physical file.
                 cp.GenerateInMemory = false;
