@@ -20,12 +20,13 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged"></ListBox>
             <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
             <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
             <TextBlock Name="fileView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3"></TextBlock>
-
+            <ListBox Name="lbRunoutput" Grid.Column="4" VerticalAlignment="Stretch"></ListBox>
         </Grid>
         <Border Grid.Row="2" BorderBrush="Blue" BorderThickness="2" Margin="20" CornerRadius="5">
             <Grid Margin="5">

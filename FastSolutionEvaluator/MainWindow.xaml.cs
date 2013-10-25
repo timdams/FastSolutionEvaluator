@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Microsoft.CSharp;
 using Microsoft.Win32;
 
@@ -177,7 +179,27 @@ namespace FastSolutionEvaluator
                     else
                     {
                         lbLog.Items.Insert(0, string.Format(string.Format(" built into {0} successfully.", res.PathToAssembly)));
-                   
+                        
+                        
+                        //Let's run this shit:
+                        Process compiler = new Process();
+                        compiler.StartInfo.FileName = "test.exe";
+                        
+                        compiler.StartInfo.UseShellExecute = false;
+                        compiler.StartInfo.RedirectStandardOutput = true;
+
+                        compiler.OutputDataReceived += new DataReceivedEventHandler(ProcessOuputHandler);
+                        compiler.Start();
+                        compiler.BeginOutputReadLine();
+                        //tbRunoutput.Text =compiler.StandardOutput.ReadToEnd();
+                        while (!compiler.HasExited)
+                        {
+                            // Refresh you're WPF window here
+                            this.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
+                            Thread.Sleep(1000);
+                        }
+                        
+                        compiler.Close();
 
                     }
                 }
@@ -186,10 +208,42 @@ namespace FastSolutionEvaluator
                     lbLog.Items.Insert(0, string.Format(ex.Message));
                 }
             }
+
             else
             {
                 MessageBox.Show("No file selected");
             }
+        }
+
+        public void ProcessOuputHandler(object sendingProcess, DataReceivedEventArgs outLine)
+        {
+            if (!String.IsNullOrEmpty(outLine.Data))
+            {
+                if (!lbRunoutput.Dispatcher.CheckAccess())
+                {
+                    // Called from a none ui thread, so use dispatcher
+                    ShowLoggingDelegate showLoggingDelegate = new ShowLoggingDelegate(ShowLogging);
+                    lbRunoutput.Dispatcher.Invoke(DispatcherPriority.Normal, showLoggingDelegate, outLine.Data);
+                }
+                else
+                {
+                    // Called from UI trhead so just update the textbox
+                    ShowLogging(outLine.Data);
+                };
+            }
+        }
+
+        private delegate void ShowLoggingDelegate(string text);
+        private static Action EmptyDelegate = delegate() { };
+
+        /// <summary>
+        /// Show the logging on screen
+        /// </summary>
+        /// <param name="text"></param>
+        private void ShowLogging(string text)
+        {
+            lbRunoutput.Items.Add(text);
+
         }
     }
 
