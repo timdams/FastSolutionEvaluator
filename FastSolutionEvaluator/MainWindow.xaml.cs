@@ -68,7 +68,7 @@ namespace FastSolutionEvaluator
                                 var cs = new CSFile();
                                 cs.Path = re;
                                 if (cs.Path.Contains("AssemblyInfo") ||
-                                    cs.Path.Contains("TemporaryGeneratedFile"))
+                                    cs.Path.Contains("TemporaryGeneratedFile") || cs.Path.Contains("App.xaml") || cs.Path.EndsWith("g.cs") || cs.Path.EndsWith("i.cs") || cs.Path.EndsWith("Designer.cs"))
                                     continue;
                                 cs.Content = File.ReadAllText(re);
                                 project.CSFiles.Add(cs);
@@ -77,6 +77,16 @@ namespace FastSolutionEvaluator
                                 project.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs"))
                                        .ThenBy(p => p.FileName)
                                        .ToList();
+                            var xaml = Directory.GetFiles(System.IO.Path.GetDirectoryName(proj), "*.xaml", SearchOption.AllDirectories);
+                            foreach (var re in xaml)
+                            {
+                                var cs = new CSFile();
+                                cs.Path = re;
+                                if (cs.Path.Contains("App.xaml") || cs.Path.EndsWith("i.xaml"))
+                                    continue;
+                                cs.Content = File.ReadAllText(re);
+                                project.CSFiles.Add(cs);
+                            }
 
                             sln.Csprojs.Add(project);
 
@@ -95,6 +105,7 @@ namespace FastSolutionEvaluator
             if (lbSLNS.SelectedIndex != -1)
             {
                 lbPROJS.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).Csprojs;
+                lbLog.Items.Insert(0, (lbSLNS.SelectedItem as SolutionMeta).FullPath);
                 if (lbPROJS.Items.Count > 0)
                     lbPROJS.SelectedIndex = 0;
             }
@@ -115,6 +126,7 @@ namespace FastSolutionEvaluator
             if (lbFilesInSLN.SelectedIndex != -1)
             {
                 fileView.Text = (lbFilesInSLN.SelectedItem as CSFile).Content;
+                
             }
         }
 
@@ -177,7 +189,7 @@ namespace FastSolutionEvaluator
                     else
                     {
                         lbLog.Items.Insert(0, string.Format(string.Format(" built into {0} successfully.", res.PathToAssembly)));
-                   
+                        System.Diagnostics.Process.Start(res.PathToAssembly);
 
                     }
                 }

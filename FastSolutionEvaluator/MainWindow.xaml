@@ -24,7 +24,8 @@
             <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged"></ListBox>
             <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
             <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
-            <TextBlock Name="fileView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3"></TextBlock>
+            <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
+            </ScrollViewer>
 
         </Grid>
         <Border Grid.Row="2" BorderBrush="Blue" BorderThickness="2" Margin="20" CornerRadius="5">
@@ -46,5 +47,6 @@
             </Grid>
         </Border>
         <ListBox Grid.Row="3" Name="lbLog"></ListBox>
+        
     </Grid>
 </Window>
