@@ -27,6 +27,20 @@
                 </Button.Style>
                 <Image Source="compile.jpg" MaxHeight="50"  ></Image>
             </Button>
+            <Button Margin="10" Name="trycompileandRun" ToolTip="Try to compile the application" Click="trycompileandRun_Click">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger 
+                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Image Source="buildall.png" MaxHeight="50"  ></Image>
+            </Button>
             <Button Margin="10" Name="btnStartDebugExe" Click="btnStartDebugExe_Click" ToolTip="Try running the bin\debug(or release) exe" >
                 <Button.Style>
                     <Style>

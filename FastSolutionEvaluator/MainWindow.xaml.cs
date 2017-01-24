@@ -19,6 +19,8 @@ using System.Windows.Shapes;
 using Microsoft.CSharp;
 using Microsoft.Win32;
 using System.Windows.Markup;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Execution;
 
 namespace FastSolutionEvaluator
 {
@@ -258,7 +260,35 @@ namespace FastSolutionEvaluator
             Process.Start(debugp);
         }
     }
-}
+
+        private void trycompileandRun_Click(object sender, RoutedEventArgs e)
+        {
+            // http://stackoverflow.com/questions/22227804/build-visual-studio-solution-from-code
+            // https://bogdangavril.wordpress.com/2012/03/15/take-control-of-msbuild-using-msbuild-api/
+            string projectFilePath = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+
+            ProjectCollection pc = new ProjectCollection();
+
+            // THERE ARE A LOT OF PROPERTIES HERE, THESE MAP TO THE MSBUILD CLI PROPERTIES
+            Dictionary<string, string> globalProperty = new Dictionary<string, string>();
+            globalProperty.Add("OutputPath", @"c:\temp");
+
+            BuildParameters bp = new BuildParameters(pc);
+            BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "4.0", new string[] { "Build" }, null);
+            // THIS IS WHERE THE MAGIC HAPPENS - IN PROCESS MSBUILD
+            BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
+            // A SIMPLE WAY TO CHECK THE RESULT
+            if (buildResult.OverallResult == BuildResultCode.Success)
+            {
+                MessageBox.Show("got it");
+                
+            }
+            else
+            {
+                MessageBox.Show("nope");
+            }
+        }
+    }
 
 
 }
