@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.CSharp;
 using Microsoft.Win32;
+using System.Windows.Markup;
 
 namespace FastSolutionEvaluator
 {
@@ -96,7 +97,9 @@ namespace FastSolutionEvaluator
 
                 }
 
+
                 lbSLNS.ItemsSource = allslns;
+               
             }
         }
 
@@ -127,6 +130,20 @@ namespace FastSolutionEvaluator
             {
                 fileView.Text = (lbFilesInSLN.SelectedItem as CSFile).Content;
 
+                if ((lbFilesInSLN.SelectedItem as CSFile).FileName.EndsWith("xaml"))
+                {
+                    //Lets parse this stuff
+                    try
+                    {
+                        string converxaml = (lbFilesInSLN.SelectedItem as CSFile).Content;
+                        //Find first grid
+                        //TODO
+                    }
+                    catch (FileNotFoundException ex)
+                    {
+                        MessageBox.Show(ex.Message.ToString());
+                    }
+                }
             }
         }
 
@@ -196,6 +213,7 @@ namespace FastSolutionEvaluator
                 catch (Exception ex)
                 {
                     lbLog.Items.Insert(0, string.Format(ex.Message));
+
                 }
             }
             else
@@ -219,8 +237,9 @@ namespace FastSolutionEvaluator
                 else if (File.Exists(releasep))
                     usethis = releasep;
                 if (usethis != "null")
-                    try {
-                       var Proc= Process.Start(usethis);     
+                    try
+                    {
+                        var Proc = Process.Start(usethis);
                     }
                     catch (Exception ex)
                     {
@@ -230,18 +249,20 @@ namespace FastSolutionEvaluator
             }
         }
 
-        private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbSLNS.SelectedIndex != -1)
-            {
+    
 
-                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
-                //
-                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
-                Process.Start(debugp);
-            }
+    private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
+    {
+        if (lbSLNS.SelectedIndex != -1)
+        {
+
+            //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+            //
+            string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+            Process.Start(debugp);
         }
     }
+}
 
 
 }
