@@ -23,6 +23,7 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace FastSolutionEvaluator
 {
@@ -103,7 +104,7 @@ namespace FastSolutionEvaluator
 
 
                 lbSLNS.ItemsSource = allslns;
-               
+
             }
         }
 
@@ -132,22 +133,13 @@ namespace FastSolutionEvaluator
         {
             if (lbFilesInSLN.SelectedIndex != -1)
             {
-                fileView.Text = (lbFilesInSLN.SelectedItem as CSFile).Content;
-
-                if ((lbFilesInSLN.SelectedItem as CSFile).FileName.EndsWith("xaml"))
-                {
-                    //Lets parse this stuff
-                    try
-                    {
-                        string converxaml = (lbFilesInSLN.SelectedItem as CSFile).Content;
-                        //Find first grid
-                        //TODO
-                    }
-                    catch (FileNotFoundException ex)
-                    {
-                        MessageBox.Show(ex.Message.ToString());
-                    }
-                }
+                //https://github.com/icsharpcode/AvalonEdit/blob/master/ICSharpCode.AvalonEdit/Highlighting/Resources/Resources.cs
+                // http://midnightprogrammer.net/post/Syntax-Highlighter-In-WPF/
+                fileView.Load((lbFilesInSLN.SelectedItem as CSFile).Path);
+                if (((lbFilesInSLN.SelectedItem as CSFile).FileName.EndsWith("xaml")))
+                    fileView.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("XML");
+                else
+                    fileView.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
             }
         }
 
@@ -234,8 +226,8 @@ namespace FastSolutionEvaluator
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
                 SolutionMeta selsol = (lbSLNS.SelectedItem as SolutionMeta);
-                
-               
+
+
                 if (selsol.BestExePath != "null")
                     try
                     {
@@ -249,19 +241,19 @@ namespace FastSolutionEvaluator
             }
         }
 
-    
 
-    private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
-    {
-        if (lbSLNS.SelectedIndex != -1)
+
+        private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
         {
+            if (lbSLNS.SelectedIndex != -1)
+            {
 
-            //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
-            //
-            string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
-            Process.Start(debugp);
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+                Process.Start(debugp);
+            }
         }
-    }
 
         private void trycompileandRun_Click(object sender, RoutedEventArgs e)
         {
@@ -295,7 +287,7 @@ namespace FastSolutionEvaluator
         }
     }
 
-    class MSBuildLogger:Logger
+    class MSBuildLogger : Logger
     {
         private StringBuilder errorLog = new StringBuilder();
 
