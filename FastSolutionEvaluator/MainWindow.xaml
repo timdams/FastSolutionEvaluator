@@ -12,6 +12,8 @@
         <StackPanel Orientation="Horizontal">
             <Button Name="btnLoad" Click="btnLoad_Click">Load solutions</Button>
             <Button Name="tryRunBtn" Click="TryRunBtn_OnClick">Run it</Button>
+            <Button Name="btnStartDebugExe" Click="btnStartDebugExe_Click">Start xml</Button>
+            <Button Name="btnOpenInVS" Click="btnOpenInVS_Click">Open in VS</Button>
         </StackPanel>
         <Grid Grid.Row="1">
 

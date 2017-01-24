@@ -33,24 +33,24 @@ namespace FastSolutionEvaluator
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            
+
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
 
             dialog.SelectedPath = Properties.Settings.Default.LastPath;
-            
+
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
 
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
-        
+
                 var allslns = new List<SolutionMeta>();
                 foreach (var directory in Directory.GetDirectories(dialog.SelectedPath, "*.*", SearchOption.AllDirectories))
                 {
-                    if (Directory.GetFiles(directory,"*.sln").Count() > 0)
+                    if (Directory.GetFiles(directory, "*.sln").Count() > 0)
                     {
                         var sln = new SolutionMeta(directory);
-                        
+
 
                         //Find .csproj file 
                         //Improve: parse this info from .sln file
@@ -62,13 +62,13 @@ namespace FastSolutionEvaluator
 
 
 
-                            var res = Directory.GetFiles( System.IO.Path.GetDirectoryName(proj), "*.cs", SearchOption.AllDirectories);
+                            var res = Directory.GetFiles(System.IO.Path.GetDirectoryName(proj), "*.cs", SearchOption.AllDirectories);
                             foreach (var re in res)
                             {
                                 var cs = new CSFile();
                                 cs.Path = re;
                                 if (cs.Path.Contains("AssemblyInfo") ||
-                                    cs.Path.Contains("TemporaryGeneratedFile") || cs.Path.Contains("App.xaml") || cs.Path.EndsWith("g.cs") || cs.Path.EndsWith("i.cs") || cs.Path.EndsWith("Designer.cs"))
+                                    cs.Path.Contains("TemporaryGeneratedFile") || cs.Path.Contains("App.xaml") || cs.Path.EndsWith(".g.cs") || cs.Path.EndsWith(".i.cs") || cs.Path.EndsWith(".Designer.cs"))
                                     continue;
                                 cs.Content = File.ReadAllText(re);
                                 project.CSFiles.Add(cs);
@@ -82,7 +82,7 @@ namespace FastSolutionEvaluator
                             {
                                 var cs = new CSFile();
                                 cs.Path = re;
-                                if (cs.Path.Contains("App.xaml") || cs.Path.EndsWith("i.xaml"))
+                                if (cs.Path.Contains("App.xaml") || cs.Path.EndsWith(".i.xaml"))
                                     continue;
                                 cs.Content = File.ReadAllText(re);
                                 project.CSFiles.Add(cs);
@@ -126,7 +126,7 @@ namespace FastSolutionEvaluator
             if (lbFilesInSLN.SelectedIndex != -1)
             {
                 fileView.Text = (lbFilesInSLN.SelectedItem as CSFile).Content;
-                
+
             }
         }
 
@@ -182,8 +182,8 @@ namespace FastSolutionEvaluator
                         lbLog.Items.Insert(0, string.Format("Errors building {0}", res.PathToAssembly));
                         foreach (CompilerError ce in res.Errors)
                         {
-                             lbLog.Items.Insert(0, string.Format("  {0}", ce.ToString()));
-                            
+                            lbLog.Items.Insert(0, string.Format("  {0}", ce.ToString()));
+
                         }
                     }
                     else
@@ -201,6 +201,42 @@ namespace FastSolutionEvaluator
             else
             {
                 MessageBox.Show("No file selected");
+            }
+        }
+
+        private void btnStartDebugExe_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedIndex != -1)
+            {
+
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + lbPROJS.SelectedItem + "\\bin\\debug\\" + lbPROJS.SelectedItem + ".exe";
+                string releasep = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + lbPROJS.SelectedItem + "\\bin\\release\\" + lbPROJS.SelectedItem + ".exe";
+                string usethis = "null";
+                if (File.Exists(debugp))
+                    usethis = debugp;
+                else if (File.Exists(releasep))
+                    usethis = releasep;
+                if (usethis != "null")
+                    try { Process.Start(usethis); }
+                    catch (Exception ex)
+                    {
+                        lbLog.Items.Insert(0, string.Format(ex.Message));
+                    }
+                else { lbLog.Items.Insert(0, "No build exe found"); }
+            }
+        }
+
+        private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedIndex != -1)
+            {
+
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+                Process.Start(debugp);
             }
         }
     }
