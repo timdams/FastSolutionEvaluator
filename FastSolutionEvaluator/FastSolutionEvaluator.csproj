@@ -110,13 +110,16 @@
     <Resource Include="compile.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="folder.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="missing.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="buildall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="download.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="folder.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

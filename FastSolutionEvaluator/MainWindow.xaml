@@ -83,6 +83,7 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}"  ></Image>
+
                             <TextBlock Text="{Binding FolderName}"></TextBlock>
                             
                         </StackPanel>

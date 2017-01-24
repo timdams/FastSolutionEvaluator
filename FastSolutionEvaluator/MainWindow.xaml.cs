@@ -284,8 +284,9 @@ namespace FastSolutionEvaluator
             // A SIMPLE WAY TO CHECK THE RESULT
             if (buildResult.OverallResult == BuildResultCode.Success)
             {
-                MessageBox.Show("got it");
-                
+                Process.Start("c:\\temp\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".exe");
+
+
             }
             else
             {

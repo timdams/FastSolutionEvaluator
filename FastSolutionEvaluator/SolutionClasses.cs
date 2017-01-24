@@ -57,6 +57,7 @@ namespace FastSolutionEvaluator
            
         }
 
+
         public List<CSPROJ> Csprojs { get; set; }
 
         public SolutionMeta(string path)
