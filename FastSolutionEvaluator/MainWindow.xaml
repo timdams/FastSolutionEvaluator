@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FastSolutionEvaluator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="900" Width="1200">
+        Title="Fast Solution Evaluator" Height="900" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -14,12 +14,45 @@
                 <Image Source="folder.png" MaxHeight="50"  ></Image>
             </Button>
             <Button Margin="10" Name="tryRunBtn" ToolTip="Try to compile the (console) application" Click="TryRunBtn_OnClick">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger 
+                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Image Source="compile.jpg" MaxHeight="50"  ></Image>
             </Button>
             <Button Margin="10" Name="btnStartDebugExe" Click="btnStartDebugExe_Click" ToolTip="Try running the bin\debug(or release) exe" >
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger 
+                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Image Source="play.png" MaxHeight="50"  ></Image>
             </Button>
             <Button Margin="10" Name="btnOpenInVS" ToolTip="Open the solution in VS" Click="btnOpenInVS_Click">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger 
+                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 <Image Source="vs.png" MaxHeight="50"  ></Image></Button>
         </StackPanel>
         <Grid Grid.Row="1">
@@ -29,12 +62,24 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
+    
             </Grid.ColumnDefinitions>
-            <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged"></ListBox>
+            <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}"  ></Image>
+                            <TextBlock Text="{Binding FolderName}"></TextBlock>
+                            
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
             <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
             <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
             </ScrollViewer>
+           
   
         </Grid>
         <Border Visibility="Collapsed" Grid.Row="2" BorderBrush="Blue" BorderThickness="2" Margin="20" CornerRadius="5">

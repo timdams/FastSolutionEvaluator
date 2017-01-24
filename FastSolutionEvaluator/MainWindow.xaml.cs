@@ -229,17 +229,13 @@ namespace FastSolutionEvaluator
 
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
-                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + lbPROJS.SelectedItem + "\\bin\\debug\\" + lbPROJS.SelectedItem + ".exe";
-                string releasep = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + lbPROJS.SelectedItem + "\\bin\\release\\" + lbPROJS.SelectedItem + ".exe";
-                string usethis = "null";
-                if (File.Exists(debugp))
-                    usethis = debugp;
-                else if (File.Exists(releasep))
-                    usethis = releasep;
-                if (usethis != "null")
+                SolutionMeta selsol = (lbSLNS.SelectedItem as SolutionMeta);
+                
+               
+                if (selsol.BestExePath != "null")
                     try
                     {
-                        var Proc = Process.Start(usethis);
+                        var Proc = Process.Start(selsol.BestExePath);
                     }
                     catch (Exception ex)
                     {

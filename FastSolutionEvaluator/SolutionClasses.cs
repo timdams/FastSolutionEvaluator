@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FastSolutionEvaluator
 {
@@ -19,6 +20,43 @@ namespace FastSolutionEvaluator
             return FolderName;
         }
 
+
+        public Visibility HasNoExeVisibile
+        {
+            get
+            {
+                if (Csprojs.Count > 0)
+                {
+                    
+                    if (BestExePath != "null")
+                    {
+                        return Visibility.Hidden;
+                    }
+                }
+                return Visibility.Visible;
+            }
+        }
+
+     
+
+        public string BestExePath
+        {
+            get {
+                string debugp = FullPath + "\\" + Csprojs[0].ToString() + "\\bin\\debug\\" + Csprojs[0].ToString() + ".exe";
+                string releasep = FullPath + "\\" + Csprojs[0].ToString() + "\\bin\\release\\" + Csprojs[0].ToString() + ".exe";
+                string noproj= FullPath+ "\\bin\\debug\\" + Csprojs[0].ToString() + ".exe";
+                string usethis = "null";
+                if (File.Exists(debugp))
+                    usethis = debugp;
+                else if (File.Exists(releasep))
+                    usethis = releasep;
+                else if (File.Exists(noproj))
+                    usethis = noproj;
+                return usethis;
+            }
+           
+        }
+
         public List<CSPROJ> Csprojs { get; set; }
 
         public SolutionMeta(string path)
@@ -26,6 +64,8 @@ namespace FastSolutionEvaluator
             FullPath = path;
             Csprojs = new List<CSPROJ>();
         }
+
+        
 
     }
 
