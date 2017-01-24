@@ -95,9 +95,9 @@
             <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
             <!--<ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
             </ScrollViewer>-->
-            <ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible">
-                <avalon:TextEditor   Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" ></avalon:TextEditor>
-            </ScrollViewer>
+            
+                <avalon:TextEditor Grid.Column="3"   Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" ></avalon:TextEditor>
+            
 
         </Grid>
         <Border Visibility="Collapsed" Grid.Row="2" BorderBrush="Blue" BorderThickness="2" Margin="20" CornerRadius="5">

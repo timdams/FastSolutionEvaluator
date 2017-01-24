@@ -270,7 +270,7 @@ namespace FastSolutionEvaluator
             BuildParameters bp = new BuildParameters(pc);
             MSBuildLogger customLogger = new MSBuildLogger();
             bp.Loggers = new List<ILogger>() { customLogger };
-            BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "4.0", new string[] { "Build" }, null);
+            BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "14.0", new string[] { "Build" }, null);
             // THIS IS WHERE THE MAGIC HAPPENS - IN PROCESS MSBUILD
             BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
             // A SIMPLE WAY TO CHECK THE RESULT
