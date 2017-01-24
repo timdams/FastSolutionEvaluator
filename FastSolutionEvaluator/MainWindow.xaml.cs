@@ -219,7 +219,9 @@ namespace FastSolutionEvaluator
                 else if (File.Exists(releasep))
                     usethis = releasep;
                 if (usethis != "null")
-                    try { Process.Start(usethis); }
+                    try {
+                       var Proc= Process.Start(usethis);     
+                    }
                     catch (Exception ex)
                     {
                         lbLog.Items.Insert(0, string.Format(ex.Message));
