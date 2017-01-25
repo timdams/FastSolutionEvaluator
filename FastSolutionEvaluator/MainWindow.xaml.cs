@@ -24,6 +24,7 @@ using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using ICSharpCode.AvalonEdit.Highlighting;
+using FastSolutionEvaluator.utility.msbuild;
 
 namespace FastSolutionEvaluator
 {
@@ -110,6 +111,7 @@ namespace FastSolutionEvaluator
 
         private void LbSLNS_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             if (lbSLNS.SelectedIndex != -1)
             {
                 lbPROJS.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).Csprojs;
@@ -293,80 +295,137 @@ namespace FastSolutionEvaluator
 
         private void writeResult_Click(object sender, RoutedEventArgs e)
         {
-            string result = (lbSLNS.SelectedItem as SolutionMeta).FolderName;
-            result += ";";
-            result += (chkbUI.IsChecked == true) ? "1;" : "0;";
-            result += (chkbUI2.IsChecked == true) ? "1;" : "0;";
-            result += (chkbFlow1.IsChecked == true) ? "1;" : "0;";
-            result += (chkbFlow2.IsChecked == true) ? "1;" : "0;";
-            result += (chkbFlow3.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode1.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode2.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode3.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode4.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode5.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode6.IsChecked == true) ? "1;" : "0;";
-            result += (chkbMethode7.IsChecked == true) ? "1;" : "0;";
-            result += (chkbLoop1.IsChecked == true) ? "1;" : "0;";
-            result += (chkbReset1.IsChecked == true) ? "1;" : "0;";
-            result += (chkbReset2.IsChecked == true) ? "1;" : "0;";
-            result += (chkbReset3.IsChecked == true) ? "1;" : "0;";
-            result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
-            result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
-            result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
-            MessageBox.Show(result);
+            if (lbSLNS.SelectedIndex != -1)
+            {
+                string result = (lbSLNS.SelectedItem as SolutionMeta).FolderName;
+                result += ";";
+                result += (chkbUI.IsChecked == true) ? "1;" : "0;";
+                result += (chkbUI2.IsChecked == true) ? "1;" : "0;";
+                result += (chkbFlow1.IsChecked == true) ? "1;" : "0;";
+                result += (chkbFlow2.IsChecked == true) ? "1;" : "0;";
+                result += (chkbFlow3.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode1.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode2.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode3.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode4.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode5.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode6.IsChecked == true) ? "1;" : "0;";
+                result += (chkbMethode7.IsChecked == true) ? "1;" : "0;";
+                result += (chkbLoop1.IsChecked == true) ? "1;" : "0;";
+                result += (chkbReset1.IsChecked == true) ? "1;" : "0;";
+                result += (chkbReset2.IsChecked == true) ? "1;" : "0;";
+                result += (chkbReset3.IsChecked == true) ? "1;" : "0;";
+                result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
+                result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
+                result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
+                result += DateTime.Now;
+                MessageBox.Show(result);
+              
+                WriteEvalStuffToFile(result, (lbSLNS.SelectedItem as SolutionMeta));
+                ResetState();
+                evalstuffchanged = false;
+            }
+            else
+                MessageBox.Show("Selecteer eerst solution");
+        }
 
+        private  void WriteEvalStuffToFile(string result, SolutionMeta solution )
+        {
+            var evalfilepath = Properties.Settings.Default.LastPath + "\\evalsresults.csv";
+            //TODO: write stuff away
+            int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
+            if (line!=-1)
+            {
+                if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    File_DeleteLine(line, evalfilepath);
+                    var f = File.AppendText(evalfilepath);
+                    f.WriteLine(result);
+                    f.Close();
+
+                }
+            }
+            else
+            {
+                var f = File.AppendText(evalfilepath);
+                f.WriteLine(result);
+                f.Close();
+            }
+        }
+        void File_DeleteLine(int Line, string Path)
+        {
+            StringBuilder sb = new StringBuilder();
+            using (StreamReader sr = new StreamReader(Path))
+            {
+                int Countup = 0;
+                while (!sr.EndOfStream)
+                {
+                    Countup++;
+                    if (Countup != Line)
+                    {
+                        using (StringWriter sw = new StringWriter(sb))
+                        {
+                            sw.WriteLine(sr.ReadLine());
+                        }
+                    }
+                    else
+                    {
+                        sr.ReadLine();
+                    }
+                }
+            }
+            using (StreamWriter sw = new StreamWriter(Path))
+            {
+                sw.Write(sb.ToString());
+            }
+        }
+        public  int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            int lineNum = 0;
+            using (StringReader reader = new StringReader(text))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lineNum++;
+                    if (line.Contains(lineToFind))
+                        return lineNum;
+                }
+            }
+            return -1;
+        }
+
+        private void ResetState()
+        {
+            chkbUI.IsChecked = false;
+            chkbUI2.IsChecked = false;
+            chkbFlow1.IsChecked = false;
+            chkbFlow2.IsChecked = false;
+            chkbFlow3.IsChecked = false;
+            chkbMethode1.IsChecked = false;
+            chkbMethode2.IsChecked = false;
+            chkbMethode3.IsChecked = false;
+            chkbMethode4.IsChecked = false;
+            chkbMethode5.IsChecked = false;
+            chkbMethode6.IsChecked = false;
+            chkbMethode7.IsChecked = false;
+            chkbLoop1.IsChecked = false;
+            chkbReset1.IsChecked = false;
+            chkbReset2.IsChecked = false;
+            chkbReset3.IsChecked = false;
+            chkbReset4.IsChecked = false;
+            chkbPro1.IsChecked = false;
+            chkbPro2.IsChecked = false;
+        }
+
+        bool evalstuffchanged = false;
+        private void chkbUI_Click(object sender, RoutedEventArgs e)
+        {
+            evalstuffchanged = true;
         }
     }
 
-    class MSBuildLogger : Logger
-    {
-        private StringBuilder errorLog = new StringBuilder();
 
-        public string BuildErrors { get; private set; }
-
-        /// <summary>
-        /// This will gather info about the projects built
-        /// </summary>
-        public IList<string> BuildDetails { get; private set; }
-
-        /// <summary>
-        /// Initialize is guaranteed to be called by MSBuild at the start of the build
-        /// before any events are raised.
-        /// </summary>
-        public override void Initialize(IEventSource eventSource)
-        {
-            BuildDetails = new List<string>();
-
-            // FOR BREVITY, WE'LL ONLY REGISTER FOR CERTAIN EVENT TYPES.
-            eventSource.ProjectStarted += new ProjectStartedEventHandler(eventSource_ProjectStarted);
-            eventSource.ErrorRaised += new BuildErrorEventHandler(eventSource_ErrorRaised);
-
-        }
-
-        void eventSource_ErrorRaised(object sender, BuildErrorEventArgs e)
-        {
-            // BUILDERROREVENTARGS ADDS LINENUMBER, COLUMNNUMBER, FILE, AMONGST OTHER PARAMETERS
-            string line = String.Format(": ERROR {0}({1},{2}): ", e.File, e.LineNumber, e.ColumnNumber);
-            errorLog.Append(line + e.Message);
-        }
-
-        void eventSource_ProjectStarted(object sender, ProjectStartedEventArgs e)
-        {
-            BuildDetails.Add(e.Message);
-        }
-
-        /// <summary>
-        /// Shutdown() is guaranteed to be called by MSBuild at the end of the build, after all
-        /// events have been raised.
-        /// </summary>
-        public override void Shutdown()
-        {
-            // DONE LOGGING, LET GO OF THE FILE
-            BuildErrors = errorLog.ToString();
-
-        }
-    }
 
 
 }

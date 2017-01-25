@@ -114,43 +114,43 @@
 
                 <StackPanel Grid.Row="0">
                     <TextBlock FontWeight="Bold">Inleiding UI (1p)</TextBlock>
-                    <CheckBox Name="chkbUI">Hoofdmodule en resetknop IsEnabled, rest niet</CheckBox>
-                    <CheckBox Name="chkbUI2">Gebruikt groupboxes</CheckBox>
+                    <CheckBox Name="chkbUI" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Hoofdmodule en resetknop IsEnabled, rest niet</CheckBox>
+                    <CheckBox Name="chkbUI2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Gebruikt groupboxes</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="1">
                     <TextBlock FontWeight="Bold">Moduleflow (4p)</TextBlock>
-                    <CheckBox Name="chkbFlow1">Bestel frietjes wordt actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbFlow2">Bestel drank wordt actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbFlow3">Bereken totaal actief indien nodig</CheckBox>
+                    <CheckBox Name="chkbFlow1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bestel frietjes wordt actief indien nodig</CheckBox>
+                    <CheckBox Name="chkbFlow2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bestel drank wordt actief indien nodig</CheckBox>
+                    <CheckBox Name="chkbFlow3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bereken totaal actief indien nodig</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="2">
                     <TextBlock FontWeight="Bold">Methoden berekenprijs (6p)</TextBlock>
-                    <CheckBox Name="chkbMethode1">Methode "BerekenTotaalPrijs(string hamburger, int aantalfrietjes, string drank){}</CheckBox>
-                    <CheckBox Name="chkbMethode2">2 optionele parameters (aantalfriets=0, drank="geen")</CheckBox>
-                    <CheckBox Name="chkbMethode3">Bereken totaal actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbMethode4">Wordt aangeroepen vanuit BerekenTotaal knop</CheckBox>
-                    <CheckBox Name="chkbMethode5">5€ korting bij frisdrank én frietjes</CheckBox>
-                    <CheckBox Name="chkbMethode6">3€ korting bij water én vegie én 1 frietje</CheckBox>
-                    <CheckBox Name="chkbMethode7">Fishburger+ fanta+ 3 frietjes geeft 9euro</CheckBox>
+                    <CheckBox Name="chkbMethode1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Methode "BerekenTotaalPrijs(string hamburger, int aantalfrietjes, string drank){}</CheckBox>
+                    <CheckBox Name="chkbMethode2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">2 optionele parameters (aantalfriets=0, drank="geen")</CheckBox>
+                    <CheckBox Name="chkbMethode3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bereken totaal actief indien nodig</CheckBox>
+                    <CheckBox Name="chkbMethode4" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Wordt aangeroepen vanuit BerekenTotaal knop</CheckBox>
+                    <CheckBox Name="chkbMethode5" Checked="chkbUI_Click" Unchecked="chkbUI_Click">5€ korting bij frisdrank én frietjes</CheckBox>
+                    <CheckBox Name="chkbMethode6" Checked="chkbUI_Click" Unchecked="chkbUI_Click">3€ korting bij water én vegie én 1 frietje</CheckBox>
+                    <CheckBox Name="chkbMethode7" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Fishburger+ fanta+ 3 frietjes geeft 9euro</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="3">
                     <TextBlock FontWeight="Bold">Frietjesloop (4p)</TextBlock>
-                    <CheckBox Name="chkbLoop1">Gebruikt loop om frietjes -1 tot 1 frietje te tonen</CheckBox>
+                    <CheckBox Name="chkbLoop1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Gebruikt loop om frietjes -1 tot 1 frietje te tonen</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="4">
                     <TextBlock FontWeight="Bold">Resetknop (1p)</TextBlock>
-                    <CheckBox Name="chkbReset1">Alle selecties van checkbox en radiobuttons weg</CheckBox>
-                    <CheckBox Name="chkbReset2">Aantal frietjes op 5</CheckBox>
-                    <CheckBox Name="chkbReset3">Terug 5 frietjes</CheckBox>
-                    <CheckBox Name="chkbReset4">Alle modules disables behalve hoofdmodule </CheckBox>
+                    <CheckBox Name="chkbReset1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Alle selecties van checkbox en radiobuttons weg</CheckBox>
+                    <CheckBox Name="chkbReset2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Aantal frietjes op 5</CheckBox>
+                    <CheckBox Name="chkbReset3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Terug 5 frietjes</CheckBox>
+                    <CheckBox Name="chkbReset4" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Alle modules disables behalve hoofdmodule </CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="5">
                     <TextBlock FontWeight="Bold">Pro 1 (1p)</TextBlock>
-                    <CheckBox Name="chkbPro1">BerekenTotaal enkel actief indien alles correct werd ingevuld</CheckBox>
+                    <CheckBox Name="chkbPro1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">BerekenTotaal enkel actief indien alles correct werd ingevuld</CheckBox>
                 </StackPanel>
                 <StackPanel Grid.Row="6">
-                    <TextBlock FontWeight="Bold">Pro 2 (2p)</TextBlock>
-                    <CheckBox Name="chkbPro2">Visuele weergave van menu</CheckBox>
+                    <TextBlock FontWeight="Bold" >Pro 2 (2p)</TextBlock>
+                    <CheckBox Name="chkbPro2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Visuele weergave van menu</CheckBox>
                 </StackPanel>
                 <Button Name="writeResult" Grid.Row="7" Click="writeResult_Click" Margin="5" FontSize="25" FontWeight="Bold">Schrijf weg</Button>
             </Grid>
