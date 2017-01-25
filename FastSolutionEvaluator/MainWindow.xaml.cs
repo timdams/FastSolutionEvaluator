@@ -285,6 +285,11 @@ namespace FastSolutionEvaluator
                 lbLog.Items.Insert(0, customLogger.BuildErrors);
             }
         }
+
+        private void tryEvalStuff_Click(object sender, RoutedEventArgs e)
+        {
+            EvaluatorAgent.CheckThis(lbPROJS.SelectedItem as CSPROJ);
+        }
     }
 
     class MSBuildLogger : Logger
