@@ -33,6 +33,7 @@ namespace FastSolutionEvaluator
     /// </summary>
     public partial class MainWindow : Window
     {
+        string evalfilepath = Properties.Settings.Default.LastPath + "\\evalsresults.csv";
         public MainWindow()
         {
             InitializeComponent();
@@ -102,7 +103,15 @@ namespace FastSolutionEvaluator
                     }
 
                 }
-
+                //Update eval status
+                string logfile = File.ReadAllText(evalfilepath);
+                foreach (var solution in allslns)
+                {
+                    if (GetLineNumber(logfile, solution.FolderName) > -1)
+                        solution.IsEvaled = true;
+                }
+                    
+                //Show it
 
                 lbSLNS.ItemsSource = allslns;
 
@@ -318,6 +327,7 @@ namespace FastSolutionEvaluator
                 result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
                 result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
                 result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
+                
                 result += DateTime.Now;
                 MessageBox.Show(result);
               
@@ -331,7 +341,7 @@ namespace FastSolutionEvaluator
 
         private  void WriteEvalStuffToFile(string result, SolutionMeta solution )
         {
-            var evalfilepath = Properties.Settings.Default.LastPath + "\\evalsresults.csv";
+           
             //TODO: write stuff away
             int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
             if (line!=-1)
@@ -339,19 +349,26 @@ namespace FastSolutionEvaluator
                 if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     File_DeleteLine(line, evalfilepath);
-                    var f = File.AppendText(evalfilepath);
-                    f.WriteLine(result);
-                    f.Close();
+                    WriteResultLine(result, evalfilepath,solution);
 
                 }
             }
             else
             {
-                var f = File.AppendText(evalfilepath);
-                f.WriteLine(result);
-                f.Close();
+                WriteResultLine(result, evalfilepath,solution);
             }
         }
+
+        private static void WriteResultLine(string result, string evalfilepath, SolutionMeta sol)
+        {
+            var f = File.AppendText(evalfilepath);
+            f.WriteLine(result);
+            f.Close();
+            sol.IsEvaled = true;
+
+
+        }
+
         void File_DeleteLine(int Line, string Path)
         {
             StringBuilder sb = new StringBuilder();

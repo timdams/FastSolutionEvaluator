@@ -27,7 +27,7 @@ namespace FastSolutionEvaluator
             {
                 if (Csprojs.Count > 0)
                 {
-                    
+
                     if (BestExePath != "null")
                     {
                         return Visibility.Hidden;
@@ -37,14 +37,25 @@ namespace FastSolutionEvaluator
             }
         }
 
-     
+        public Visibility HasGradeVisibile
+        {
+            get
+            {
+                if (IsEvaled)
+                    return Visibility.Visible;
+                return Visibility.Hidden;
+
+            }
+        }
+
 
         public string BestExePath
         {
-            get {
+            get
+            {
                 string debugp = FullPath + "\\" + Csprojs[0].ToString() + "\\bin\\debug\\" + Csprojs[0].ToString() + ".exe";
                 string releasep = FullPath + "\\" + Csprojs[0].ToString() + "\\bin\\release\\" + Csprojs[0].ToString() + ".exe";
-                string noproj= FullPath+ "\\bin\\debug\\" + Csprojs[0].ToString() + ".exe";
+                string noproj = FullPath + "\\bin\\debug\\" + Csprojs[0].ToString() + ".exe";
                 string usethis = "null";
                 if (File.Exists(debugp))
                     usethis = debugp;
@@ -54,11 +65,12 @@ namespace FastSolutionEvaluator
                     usethis = noproj;
                 return usethis;
             }
-           
+
         }
 
 
         public List<CSPROJ> Csprojs { get; set; }
+        public bool IsEvaled { get; internal set; }
 
         public SolutionMeta(string path)
         {
@@ -66,7 +78,7 @@ namespace FastSolutionEvaluator
             Csprojs = new List<CSPROJ>();
         }
 
-        
+
 
     }
 
@@ -81,7 +93,7 @@ namespace FastSolutionEvaluator
 
         public override string ToString()
         {
-            return FileName.Split('\\').Last().Replace(".csproj","");
+            return FileName.Split('\\').Last().Replace(".csproj", "");
         }
     }
     class CSFile
