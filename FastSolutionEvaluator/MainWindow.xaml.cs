@@ -285,6 +285,38 @@ namespace FastSolutionEvaluator
                 lbLog.Items.Insert(0, customLogger.BuildErrors);
             }
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
+
+        private void writeResult_Click(object sender, RoutedEventArgs e)
+        {
+            string result = (lbSLNS.SelectedItem as SolutionMeta).FolderName;
+            result += ";";
+            result += (chkbUI.IsChecked == true) ? "1;" : "0;";
+            result += (chkbUI2.IsChecked == true) ? "1;" : "0;";
+            result += (chkbFlow1.IsChecked == true) ? "1;" : "0;";
+            result += (chkbFlow2.IsChecked == true) ? "1;" : "0;";
+            result += (chkbFlow3.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode1.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode2.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode3.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode4.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode5.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode6.IsChecked == true) ? "1;" : "0;";
+            result += (chkbMethode7.IsChecked == true) ? "1;" : "0;";
+            result += (chkbLoop1.IsChecked == true) ? "1;" : "0;";
+            result += (chkbReset1.IsChecked == true) ? "1;" : "0;";
+            result += (chkbReset2.IsChecked == true) ? "1;" : "0;";
+            result += (chkbReset3.IsChecked == true) ? "1;" : "0;";
+            result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
+            result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
+            result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
+            MessageBox.Show(result);
+
+        }
     }
 
     class MSBuildLogger : Logger
