@@ -103,14 +103,15 @@ namespace FastSolutionEvaluator
                     }
 
                 }
-                //Update eval status
-                string logfile = File.ReadAllText(evalfilepath);
-                foreach (var solution in allslns)
-                {
-                    if (GetLineNumber(logfile, solution.FolderName) > -1)
-                        solution.IsEvaled = true;
+                if (File.Exists(evalfilepath))
+                {  //Update eval status
+                    string logfile = File.ReadAllText(evalfilepath);
+                    foreach (var solution in allslns)
+                    {
+                        if (GetLineNumber(logfile, solution.FolderName) > -1)
+                            solution.IsEvaled = true;
+                    }
                 }
-                    
                 //Show it
 
                 lbSLNS.ItemsSource = allslns;
@@ -262,7 +263,13 @@ namespace FastSolutionEvaluator
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
                 string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
-                Process.Start(debugp);
+                try
+                {
+                    Process.Start(debugp);
+                }catch(Exception ex)
+                {
+                    lbLog.Items.Insert(0, ex.Message);
+                }
             }
         }
 
@@ -341,21 +348,27 @@ namespace FastSolutionEvaluator
 
         private  void WriteEvalStuffToFile(string result, SolutionMeta solution )
         {
-           
-            //TODO: write stuff away
-            int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
-            if (line!=-1)
-            {
-                if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    File_DeleteLine(line, evalfilepath);
-                    WriteResultLine(result, evalfilepath,solution);
 
+            if (File.Exists(evalfilepath))
+            {
+                //TODO: write stuff away
+                int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
+                if (line != -1)
+                {
+                    if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        File_DeleteLine(line, evalfilepath);
+                        WriteResultLine(result, evalfilepath, solution);
+
+                    }
+                }
+                {
+                    WriteResultLine(result, evalfilepath, solution);
                 }
             }
             else
             {
-                WriteResultLine(result, evalfilepath,solution);
+                WriteResultLine(result, evalfilepath, solution);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,21 @@ using System.Windows;
 
 namespace FastSolutionEvaluator
 {
-    class SolutionMeta
+    class SolutionMeta: INotifyPropertyChanged
     {
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
         public string FullPath { get; set; }
 
         public string FolderName { get { return Path.GetFileName(FullPath); } }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public override string ToString()
         {
@@ -70,7 +80,19 @@ namespace FastSolutionEvaluator
 
 
         public List<CSPROJ> Csprojs { get; set; }
-        public bool IsEvaled { get; internal set; }
+        private bool isEvaled = false;
+        public bool IsEvaled
+        {
+            get
+            {
+                return isEvaled;
+            }
+            set
+            {
+                isEvaled = value;
+                NotifyPropertyChanged("HasGradeVisibile");
+            }
+        }
 
         public SolutionMeta(string path)
         {
