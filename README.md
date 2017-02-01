@@ -7,6 +7,7 @@ One usefull additional experimental branche exist:
 	*ConsoleControl: utilizes a control to show output of compiled project (buggy: crashes when second program is run)
 
 # Wishlist
+* Icon
 * Countdown: shows how many projects are already evaluated 
 * Dynamic checkboxes, based from XML file
 * Read already evaluated results and parse to the checkboxes
@@ -17,4 +18,6 @@ One usefull additional experimental branche exist:
 * Add "open in explorer" button for each folder
 * Add "comments" textbox in evaluation part and also write it to the file
 * Search function: in project, or in all projects. Highlight searched keyword and scroll to code immediatelly
+* Basic duplicate-code searcher 
+* SLDUpFinder integration + keep database
 
