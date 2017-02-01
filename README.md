@@ -16,4 +16,5 @@ One usefull additional experimental branche exist:
 * Push F5 to start current project
 * Add "open in explorer" button for each folder
 * Add "comments" textbox in evaluation part and also write it to the file
+* Search function: in project, or in all projects. Highlight searched keyword and scroll to code immediatelly
 
