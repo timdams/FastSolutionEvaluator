@@ -14,4 +14,6 @@ One usefull additional experimental branche exist:
 * Redo datamodel of project/solutions: now it's all file-based, but it'll be more robus if I parse the .sln/.csproj files and use that information
 * Go for full mvvm (byebye "SelectedItem as SolutionMeta"
 * Push F5 to start current project
+* Add "open in explorer" button for each folder
+* Add "comments" textbox in evaluation part and also write it to the file
 
