@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Build.Construction;
 using Microsoft.Build.BuildEngine;
+using VSSolutionLoader.Model;
 
 namespace VSSolutionLoader
 {
@@ -21,15 +22,18 @@ namespace VSSolutionLoader
             var allslns = new List<SolutionModel>();
             foreach (var directory in Directory.GetDirectories(path, "*.*", searchoption))
             {
-                var slns = Directory.GetFiles(directory, "*.sln");
-                foreach (var item in slns)
+                if (!directory.Contains(".git"))
                 {
-                    var sol = SolutionFile.Parse(item);
-                    var somodel = new SolutionModel( sol );
-                    
+                    var slns = Directory.GetFiles(directory, "*.sln");
+                    foreach (var item in slns)
+                    {
+                        var sol = SolutionFile.Parse(item);
+                        var somodel = new SolutionModel(sol);
 
-                    allslns.Add(somodel);
 
+                        allslns.Add(somodel);
+
+                    }
                 }
 
 
@@ -40,28 +44,9 @@ namespace VSSolutionLoader
 
     }
 
-    public class SolutionModel
-    {
-        public SolutionModel(SolutionFile file)
-        {
-            Projects = new List<ProjectModel>();
-            Solution = file;
-            foreach (var proj in file.ProjectsInOrder)
-            {
-                 
-                Projects.Add(new ProjectModel(proj.AbsolutePath));
-            }
-        }
-        public SolutionFile Solution { get; set; }
-        public List<ProjectModel> Projects { get; set; }
-    }
 
-    public class ProjectModel
-    {
-        public ProjectModel(string path)
-        {
-            Project= new Microsoft.Build.Evaluation.Project(path, null, "14.0");
-        }
-        public Microsoft.Build.Evaluation.Project Project { get; set; }
-    }
+
+
+
+   
 }
