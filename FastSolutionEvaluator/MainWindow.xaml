@@ -75,7 +75,7 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="0.3*"></ColumnDefinition>
+                <ColumnDefinition Width="0.7*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -88,13 +88,18 @@
                             <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}"  ></Image>
                             <Image MaxHeight="20" Source="grade.jpg" Visibility="{Binding HasGradeVisibile}"  ></Image>
 
-                            <TextBlock Text="{Binding FolderName}"></TextBlock>
+                            <TextBlock Text="{Binding SolutionName}"></TextBlock>
 
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
+            <ListBox Name="lbPROJS" Grid.Column="1" ItemsSource="{Binding ElementName=lbSLNS, Path=SelectedItem.Projects}" >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding ProjectName}" ></Label></DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
             <!--<ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
             </ScrollViewer>-->

@@ -10,8 +10,9 @@ namespace VSSolutionLoader.Model
 {
     public class SolutionModel
     {
-        public SolutionModel(SolutionFile file)
+        public SolutionModel(SolutionFile file, string path)
         {
+            PathToSln = path;
             Projects = new List<ProjectModel>();
             Solution = file;
             foreach (var proj in file.ProjectsInOrder)
@@ -19,6 +20,7 @@ namespace VSSolutionLoader.Model
                 try
                 {
                     Projects.Add(new ProjectModel(proj.AbsolutePath));
+
                 }
                 catch (Exception ex)
                 {
@@ -30,5 +32,8 @@ namespace VSSolutionLoader.Model
         }
         public SolutionFile Solution { get; set; }
         public List<ProjectModel> Projects { get; set; }
+
+        public string PathToSln { get; set; }
+        
     }
 }

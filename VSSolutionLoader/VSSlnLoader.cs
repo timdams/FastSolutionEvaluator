@@ -28,7 +28,7 @@ namespace VSSolutionLoader
                     foreach (var item in slns)
                     {
                         var sol = SolutionFile.Parse(item);
-                        var somodel = new SolutionModel(sol);
+                        var somodel = new SolutionModel(sol,item);
 
 
                         allslns.Add(somodel);

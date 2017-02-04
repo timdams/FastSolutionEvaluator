@@ -11,7 +11,7 @@ namespace ConsoleTester
         static void Main(string[] args)
         {
        //     string path = @"D:\Dropbox\Lessen\Examen\1617\RESULTATEN\ProgPrincMod1_Poging2";
-            string path = @"D:\Dropbox\PROGPROJECTS\01_Werk\EVAL\BitbucketBrowser";
+            string path = @"C:\Users\damst\Dropbox\PROGPROJECTS\4_DEMOS";
             var res= VSSolutionLoader.VSSLnLoader.GetAllSolutions(path);
 
         }
