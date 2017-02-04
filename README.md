@@ -20,4 +20,5 @@ One usefull additional experimental branche exist:
 * Search function: in project, or in all projects. Highlight searched keyword and scroll to code immediatelly
 * Basic duplicate-code searcher 
 * SLDUpFinder integration + keep database
+* Also allow solutionless projects to be added to the list.
 
