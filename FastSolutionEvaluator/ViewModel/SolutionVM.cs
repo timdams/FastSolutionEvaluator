@@ -8,7 +8,7 @@ using VSSolutionLoader.Model;
 
 namespace FastSolutionEvaluator.ViewModel
 {
-    class SolutionVM:BaseVM
+    class SolutionVM : BaseVM
     {
 
         //http://stackoverflow.com/questions/36149863/how-to-write-viewmodelbase-in-mvvm-wpf
@@ -20,24 +20,32 @@ namespace FastSolutionEvaluator.ViewModel
             projects = new List<ProjectVM>();
             foreach (var proj in solution.Projects)
             {
-                projects.Add(new ProjectVM(proj));
+
+                var p = new ProjectVM(proj);//If this line gives a strange MethodMissingException, make sure you load the 14.0 MSBuild assemblies and not the buildin ones!
+                projects.Add(p);
             }
         }
 
         public string SolutionName
         {
-            get {
+            get
+            {
 
                 return Path.GetFileName(solution.PathToSln).Split('.').First();
             }
-           // set { SetProperty(ref _firstName, value); }
+            // set { SetProperty(ref _firstName, value); }
         }
 
 
         private List<ProjectVM> projects;
         public List<ProjectVM> Projects
         {
-          get { return projects; }
+            get { return projects; }
+        }
+
+        public string PathToSln
+        {
+            get { return solution.PathToSln; }
         }
     }
 }

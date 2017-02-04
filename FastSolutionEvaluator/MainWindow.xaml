@@ -19,7 +19,7 @@
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -33,7 +33,7 @@
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -47,7 +47,7 @@
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -61,7 +61,7 @@
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInProj, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -94,10 +94,10 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ListBox Name="lbPROJS" Grid.Column="1" ItemsSource="{Binding ElementName=lbSLNS, Path=SelectedItem.Projects}" >
+            <ListBox Name="lbPROJS" Grid.Column="1" DataContext="{Binding ElementName=lbSLNS, Path=SelectedItem}" ItemsSource="{Binding Projects}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding ProjectName}"  ></TextBlock>
+                        <TextBlock Text="{Binding ProjectName, Mode=OneWay}"  ></TextBlock>
                     </DataTemplate>
                     
                 </ListBox.ItemTemplate>

@@ -181,7 +181,7 @@ namespace FastSolutionEvaluator
 
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
-                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+                string debugp = (lbSLNS.SelectedItem as SolutionVM).PathToSln;
                 try
                 {
                     Process.Start(debugp);
@@ -195,33 +195,46 @@ namespace FastSolutionEvaluator
 
         private void trycompileandRun_Click(object sender, RoutedEventArgs e)
         {
-            // http://stackoverflow.com/questions/22227804/build-visual-studio-solution-from-code
-            // https://bogdangavril.wordpress.com/2012/03/15/take-control-of-msbuild-using-msbuild-api/
-            string projectFilePath = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+            //// http://stackoverflow.com/questions/22227804/build-visual-studio-solution-from-code
+            //// https://bogdangavril.wordpress.com/2012/03/15/take-control-of-msbuild-using-msbuild-api/
+            ////string projectFilePath = (lbSLNS.SelectedItem as SolutionVM).PathToSln;
 
-            ProjectCollection pc = new ProjectCollection();
+            ////ProjectCollection pc = new ProjectCollection();
 
-            // THERE ARE A LOT OF PROPERTIES HERE, THESE MAP TO THE MSBUILD CLI PROPERTIES
-            Dictionary<string, string> globalProperty = new Dictionary<string, string>();
-            globalProperty.Add("OutputPath", @"c:\temp");
+            ////THERE ARE A LOT OF PROPERTIES HERE, THESE MAP TO THE MSBUILD CLI PROPERTIES
+            ////Dictionary<string, string> globalProperty = new Dictionary<string, string>();
+            ////globalProperty.Add("OutputPath", @"c:\temp");
 
-            BuildParameters bp = new BuildParameters(pc);
-            MSBuildLogger customLogger = new MSBuildLogger();
-            bp.Loggers = new List<ILogger>() { customLogger };
-            BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "14.0", new string[] { "Build" }, null);
-            // THIS IS WHERE THE MAGIC HAPPENS - IN PROCESS MSBUILD
-            BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
-            // A SIMPLE WAY TO CHECK THE RESULT
-            if (buildResult.OverallResult == BuildResultCode.Success)
-            {
-                Process.Start("c:\\temp\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".exe");
+            ////BuildParameters bp = new BuildParameters(pc);
+            ////MSBuildLogger customLogger = new MSBuildLogger();
+            ////bp.Loggers = new List<ILogger>() { customLogger };
+            ////BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "14.0", new string[] { "Build" }, null);
+            ////THIS IS WHERE THE MAGIC HAPPENS -IN PROCESS MSBUILD
+            ////BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
+            ////A SIMPLE WAY TO CHECK THE RESULT
+            ////if (buildResult.OverallResult == BuildResultCode.Success)
+            ////{
+            ////    Process.Start("c:\\temp\\" + System.IO.Path.GetDirectoryName((lbSLNS.SelectedItem as SolutionVM).PathToSln) + ".exe");
 
 
+            ////}
+            ////else
+            ////{
+            ////    lbLog.Items.Insert(0, customLogger.BuildErrors);
+            ////}
+
+            try {
+                //Todo: change output path to: http://stackoverflow.com/questions/26139757/how-to-get-actual-project-output-using-microsoft-build-evaluation-project-in-c-s
+                var sol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();
+                MessageBox.Show(System.IO.Path.Combine(sol.Project.Project.DirectoryPath,    sol.Project.Project.GetPropertyValue("OutputPath").ToString()));
+                if (sol.Project.Project.Build())
+                    MessageBox.Show("Succes");
             }
-            else
+            catch(Exception ex)
             {
-                lbLog.Items.Insert(0, customLogger.BuildErrors);
+                MessageBox.Show(ex.Message);
             }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -378,7 +391,7 @@ namespace FastSolutionEvaluator
         {
             if (lbFilesInProj.SelectedIndex != -1)
             {
-              //AvalaonEdit not very bindable :/
+                //AvalaonEdit not very bindable :/
                 fileView.Load((lbFilesInProj.SelectedItem as FileVM).Path);
                 fileView.SyntaxHighlighting = (lbFilesInProj.SelectedItem as FileVM).ViewerType;
             }

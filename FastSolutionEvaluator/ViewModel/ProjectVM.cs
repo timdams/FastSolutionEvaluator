@@ -10,7 +10,7 @@ namespace FastSolutionEvaluator.ViewModel
     class ProjectVM
     {
         private ProjectModel proj;
-
+        public ProjectModel Project { get { return proj; } }
         public ProjectVM(ProjectModel proj)
         {
             this.proj = proj;
@@ -19,13 +19,18 @@ namespace FastSolutionEvaluator.ViewModel
             {
                 relevantFiles.Add(new FileVM(file));
             }
+           // string n = proj.Project.Properties.Where(p => p.Name == "MSBuildProjectName").FirstOrDefault().EvaluatedValue;
         }
 
         public string ProjectName
         {
             get
             {
-                return proj.Project.Properties.Where(p => p.Name == "MSBuildProjectName").FirstOrDefault().EvaluatedValue;
+                
+                
+                string n = proj.Project.Properties.Where(p => p.Name == "MSBuildProjectName").FirstOrDefault().EvaluatedValue;
+
+                return n;
             }
         }
 
@@ -35,6 +40,8 @@ namespace FastSolutionEvaluator.ViewModel
         {
            get { return relevantFiles; }
         }
+
+       
 
     }
 }

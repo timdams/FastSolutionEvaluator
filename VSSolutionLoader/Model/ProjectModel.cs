@@ -10,7 +10,7 @@ namespace VSSolutionLoader.Model
     {
         public ProjectModel(string path)
         {
-            Project = new Microsoft.Build.Evaluation.Project(path, null, "14.0");
+            Project = new Microsoft.Build.Evaluation.Project(path, null, "4.0");
         }
         public Microsoft.Build.Evaluation.Project Project { get; set; }
 
@@ -22,7 +22,7 @@ namespace VSSolutionLoader.Model
                 var res = new List<FileModel>();
                 //TODO: filter instellen
                 var rel = Project.Items.Where(
-                    p => (p.ItemType == "Compile" && (p.EvaluatedInclude.EndsWith("cs"))&& !p.EvaluatedInclude.Contains("Designer.cs"))
+                    p => (p.ItemType == "Compile" && (p.EvaluatedInclude.EndsWith("cs"))&& !p.EvaluatedInclude.Contains("Designer.cs") && !p.EvaluatedInclude.Contains("AssemblyInfo"))
                     || p.ItemType=="Page"
                     );
                 
