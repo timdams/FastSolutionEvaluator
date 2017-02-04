@@ -61,7 +61,7 @@
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbFilesInProj, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -97,7 +97,9 @@
             <ListBox Name="lbPROJS" Grid.Column="1" ItemsSource="{Binding ElementName=lbSLNS, Path=SelectedItem.Projects}" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Label Content="{Binding ProjectName}" ></Label></DataTemplate>
+                        <TextBlock Text="{Binding ProjectName}"  ></TextBlock>
+                    </DataTemplate>
+                    
                 </ListBox.ItemTemplate>
             </ListBox>
             <ListBox Name="lbFilesInProj" Grid.Column="2" ItemsSource="{Binding ElementName=lbPROJS, Path=SelectedItem.RelevantFiles}" SelectionChanged="lbFilesInProj_SelectionChanged">
