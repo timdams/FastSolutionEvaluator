@@ -20,9 +20,12 @@ namespace VSSolutionLoader.Model
             get
             {
                 var res = new List<FileModel>();
-                //Todo filter instellen
-                var rel = Project.Items.Where(p => p.ItemType == "Compile" && (p.EvaluatedInclude.EndsWith("cs")));
-
+                //TODO: filter instellen
+                var rel = Project.Items.Where(
+                    p => (p.ItemType == "Compile" && (p.EvaluatedInclude.EndsWith("cs"))&& !p.EvaluatedInclude.Contains("Designer.cs"))
+                    || p.ItemType=="Page"
+                    );
+                
                 foreach (var file in rel)
                 {
                     FileModel m = new FileModel(file.Project.DirectoryPath + "\\" + file.EvaluatedInclude);

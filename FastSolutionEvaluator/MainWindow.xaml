@@ -81,7 +81,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
 
             </Grid.ColumnDefinitions>
-            <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged">
+            <ListBox Name="lbSLNS" >
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -100,11 +100,21 @@
                         <Label Content="{Binding ProjectName}" ></Label></DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
+            <ListBox Name="lbFilesInProj" Grid.Column="2" ItemsSource="{Binding ElementName=lbPROJS, Path=SelectedItem.RelevantFiles}" SelectionChanged="lbFilesInProj_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Name}" ></Label>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <!--<ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
             </ScrollViewer>-->
 
-            <avalon:TextEditor Grid.Column="3"   Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" ></avalon:TextEditor>
+            <avalon:TextEditor Grid.Column="3"  SyntaxHighlighting="auto"
+                               Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" 
+                               WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" 
+                              
+                               />
             <Grid Name="evalGrid" Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
