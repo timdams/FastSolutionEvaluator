@@ -153,13 +153,16 @@ namespace FastSolutionEvaluator
         {
             if (lbSLNS.SelectedIndex != -1)
             {
-
+                ProjectVM selsol = null;
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
-                SolutionMeta selsol = (lbSLNS.SelectedItem as SolutionMeta);
-
-
-                if (selsol.BestExePath != "null")
+                if (lbPROJS.SelectedIndex != -1)
+                    selsol = (lbPROJS.SelectedItem as ProjectVM);
+                else
+                    selsol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();//Using first project
+                if (selsol != null)
+                {
+                    if (selsol.BestExePath != "null")
                     try
                     {
                         var Proc = Process.Start(selsol.BestExePath);
@@ -169,6 +172,8 @@ namespace FastSolutionEvaluator
                         lbLog.Items.Insert(0, string.Format(ex.Message));
                     }
                 else { lbLog.Items.Insert(0, "No build exe found"); }
+                }
+                
             }
         }
 
@@ -429,18 +434,18 @@ namespace FastSolutionEvaluator
 
         private void OpenFileInNotepad_Click(object sender, RoutedEventArgs e)
         {
-            if(lbFilesInProj.SelectedItem !=null)
-            Process.Start("notepad.exe",(lbFilesInProj.SelectedItem as FileVM).Path);
+            if (lbFilesInProj.SelectedItem != null)
+                Process.Start("notepad.exe", (lbFilesInProj.SelectedItem as FileVM).Path);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            switch(e.Key)
+            switch (e.Key)
             {
                 case Key.F5:
                     OpenSolutionInVS_Click(this, null);
                     break;
-                    
+
             }
         }
     }

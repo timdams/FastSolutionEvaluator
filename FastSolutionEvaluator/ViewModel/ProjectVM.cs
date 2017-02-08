@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,23 @@ namespace FastSolutionEvaluator.ViewModel
             }
         }
 
+        public string BestExePath
+        {
+            get
+            {
+
+                string debugp = this.Project.Project.DirectoryPath + "\\bin\\debug\\" + this.ProjectName + ".exe";
+                string releasep = this.Project.Project.DirectoryPath  + "\\bin\\release\\" + this.ProjectName + ".exe";
+                string usethis = "null";
+                if (File.Exists(debugp))
+                    usethis = debugp;
+                else if (File.Exists(releasep))
+                    usethis = releasep;
+
+                return usethis;
+            }
+
+        }
 
         private List<FileVM> relevantFiles;
         public List<FileVM> RelevantFiles
