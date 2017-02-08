@@ -223,14 +223,15 @@ namespace FastSolutionEvaluator
             ////    lbLog.Items.Insert(0, customLogger.BuildErrors);
             ////}
 
-            try {
+            try
+            {
                 //Todo: change output path to: http://stackoverflow.com/questions/26139757/how-to-get-actual-project-output-using-microsoft-build-evaluation-project-in-c-s
                 var sol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();
-                MessageBox.Show(System.IO.Path.Combine(sol.Project.Project.DirectoryPath,    sol.Project.Project.GetPropertyValue("OutputPath").ToString()));
+                MessageBox.Show(System.IO.Path.Combine(sol.Project.Project.DirectoryPath, sol.Project.Project.GetPropertyValue("OutputPath").ToString()));
                 if (sol.Project.Project.Build())
                     MessageBox.Show("Succes");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -394,6 +395,52 @@ namespace FastSolutionEvaluator
                 //AvalaonEdit not very bindable :/
                 fileView.Load((lbFilesInProj.SelectedItem as FileVM).Path);
                 fileView.SyntaxHighlighting = (lbFilesInProj.SelectedItem as FileVM).ViewerType;
+            }
+        }
+
+        private void OpenSolutionInVS_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedItem != null)
+                Process.Start((lbSLNS.SelectedItem as SolutionVM).PathToSln);
+        }
+
+        private void OpenSolutionInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedItem != null)
+                Process.Start(System.IO.Path.GetDirectoryName((lbSLNS.SelectedItem as SolutionVM).PathToSln));
+        }
+
+        private void OpenProjectInVS_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbPROJS.SelectedItem != null)
+                Process.Start((lbPROJS.SelectedItem as ProjectVM).Project.Project.FullPath);
+        }
+        private void OpenProjectInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbPROJS.SelectedItem != null)
+                Process.Start((lbPROJS.SelectedItem as ProjectVM).Project.Project.DirectoryPath);
+        }
+
+        private void OpenFileInDefault_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbFilesInProj.SelectedItem != null)
+                Process.Start((lbFilesInProj.SelectedItem as FileVM).Path);
+        }
+
+        private void OpenFileInNotepad_Click(object sender, RoutedEventArgs e)
+        {
+            if(lbFilesInProj.SelectedItem !=null)
+            Process.Start("notepad.exe",(lbFilesInProj.SelectedItem as FileVM).Path);
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch(e.Key)
+            {
+                case Key.F5:
+                    OpenSolutionInVS_Click(this, null);
+                    break;
+                    
             }
         }
     }
