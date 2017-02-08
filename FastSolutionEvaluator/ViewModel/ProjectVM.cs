@@ -53,6 +53,7 @@ namespace FastSolutionEvaluator.ViewModel
 
         }
 
+
         private List<FileVM> relevantFiles;
         public List<FileVM> RelevantFiles
         {

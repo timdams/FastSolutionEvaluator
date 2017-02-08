@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using VSSolutionLoader.Model;
 
 namespace FastSolutionEvaluator.ViewModel
@@ -47,5 +48,27 @@ namespace FastSolutionEvaluator.ViewModel
         {
             get { return solution.PathToSln; }
         }
+
+
+        public Visibility HasNoExeVisibile
+        {
+            get
+            {
+                if (Projects.Count > 0)
+                {
+                    foreach (var item in Projects)
+                    {
+                        if (item.BestExePath != "null")
+                        {
+                            return Visibility.Hidden;
+                        }
+
+                    }
+                   
+                }
+                return Visibility.Visible;
+            }
+        }
     }
+
 }
