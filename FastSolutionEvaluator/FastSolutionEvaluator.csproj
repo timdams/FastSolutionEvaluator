@@ -73,6 +73,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ExamBuilderClasses\Examen.cs" />
+    <Compile Include="ExamBuilderClasses\Vraag.cs" />
+    <Compile Include="ExamBuilderClasses\VraagTypeEnum.cs" />
+    <Compile Include="ExamBuilderClasses\XMLHelper.cs" />
+    <Compile Include="ExamBuilderWindow.xaml.cs">
+      <DependentUpon>ExamBuilderWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SolutionClasses.cs" />
     <Compile Include="utility\AvalonHelper.cs" />
     <Compile Include="utility\msbuild\MSBuildLogger.cs" />
@@ -81,6 +88,10 @@
     <Compile Include="ViewModel\ProjectVM.cs" />
     <Compile Include="ViewModel\SolutionsVM.cs" />
     <Compile Include="ViewModel\SolutionVM.cs" />
+    <Page Include="ExamBuilderWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -59,6 +59,7 @@
                 </Button.Style>
                 <Image Source="vs.png" MaxHeight="50"  ></Image>
             </Button>
+            <Button Margin="10" Name="btnOpenExamBuilder" Click="btnOpenExamBuilder_Click">EXAMBUILDER</Button>
         </StackPanel>
         <Grid Grid.Row="1">
 

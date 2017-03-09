@@ -400,6 +400,12 @@ namespace FastSolutionEvaluator
 
             }
         }
+
+        private void btnOpenExamBuilder_Click(object sender, RoutedEventArgs e)
+        {
+            ExamBuilderWindow wnd = new ExamBuilderWindow();
+            wnd.ShowDialog();
+        }
     }
 
 
