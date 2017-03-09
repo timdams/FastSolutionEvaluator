@@ -26,6 +26,7 @@ using Microsoft.Build.Utilities;
 using ICSharpCode.AvalonEdit.Highlighting;
 using FastSolutionEvaluator.utility.msbuild;
 using FastSolutionEvaluator.ViewModel;
+using FastSolutionEvaluator.ExamBuilderClasses;
 
 namespace FastSolutionEvaluator
 {
@@ -35,6 +36,7 @@ namespace FastSolutionEvaluator
     public partial class MainWindow : Window
     {
         string evalfilepath = Properties.Settings.Default.LastPath + "\\evalsresults.csv";
+        public Examen GekoppeldExamen { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -50,6 +52,28 @@ namespace FastSolutionEvaluator
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                if (!File.Exists(dialog.SelectedPath + "\\koppel.xml"))
+                {                
+                    var wnd = new KoppelExamenAanFolderWindow();
+                    wnd.ShowDialog();
+
+                    if (wnd.TeKoppelenExamenPath != "")
+                    {
+
+                        KoppelExamen k = new KoppelExamen();
+                        k.ExamFilePath = wnd.TeKoppelenExamenPath;
+                        k.FolderPath = dialog.SelectedPath;
+                        XMLHelper.SaveToXml<KoppelExamen>(k, dialog.SelectedPath + "\\koppel.xml");
+                        //TODO: best file mee in folder proppen?
+                    }
+                }
+                else
+                {
+                    var koppel = XMLHelper.LoadFromXml<KoppelExamen>(dialog.SelectedPath + "\\koppel.xml");
+                    GekoppeldExamen = XMLHelper.LoadFromXml<Examen>(koppel.ExamFilePath);
+                    //TODO: vragen UI genereren
+                }
+               
 
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
@@ -57,6 +81,8 @@ namespace FastSolutionEvaluator
                 var allslns = new List<SolutionVM>();
 
                 lbSLNS.ItemsSource = SolutionsVM.Load(dialog.SelectedPath);
+
+                
             }
             //TODO: implement in new eval datamode
             //if (File.Exists(evalfilepath))

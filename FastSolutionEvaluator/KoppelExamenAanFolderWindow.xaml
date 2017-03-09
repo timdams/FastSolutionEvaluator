@@ -1,0 +1,16 @@
+﻿<Window x:Class="FastSolutionEvaluator.KoppelExamenAanFolderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FastSolutionEvaluator"
+        mc:Ignorable="d"
+        Title="KoppelExamenAanFolderWindow" Height="300" Width="400.403">
+    <Grid>
+        <Button x:Name="btnOpenExamBuilder" Content="Open ExamBuilder" HorizontalAlignment="Left" Height="88" Margin="10,10,0,0" VerticalAlignment="Top" Width="91" Click="btnOpenExamBuilder_Click"/>
+        <Button x:Name="btnLaadExamenEnKoppe" Content="Koppel bestaand examen (xml)" HorizontalAlignment="Left" Height="88" Margin="115,10,0,0" VerticalAlignment="Top" Width="227" Click="btnLaadExamenEnKoppe_Click"/>
+        <Button x:Name="btnIgnoreForNow" Content="Koppel nog niets" HorizontalAlignment="Left" Height="75" Margin="115,103,0,0" VerticalAlignment="Top" Width="227" Click="btnIgnoreForNow_Click"/>
+        <TextBlock TextWrapping="Wrap"  x:Name="label" Text="Er is nog geen lijst van vragen (examen) gekoppeld aan deze folder. Wil je dit nu doen? Heb je nog geen examen gemaakt? Maak er eerst 1 in de Exambuilder, bewaar het en klik nadien op de Koppelknop" HorizontalAlignment="Left" Margin="10,204,0,0" VerticalAlignment="Top" Height="56" Width="374"/>
+
+    </Grid>
+</Window>
