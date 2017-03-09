@@ -38,6 +38,7 @@ namespace FastSolutionEvaluator
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
@@ -74,81 +75,6 @@ namespace FastSolutionEvaluator
 
         }
 
-
-        private void TryRunBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (lbFilesInProj.SelectedIndex != -1)
-            {
-                //Here comes silly code
-                CodeDomProvider comp = CodeDomProvider.CreateProvider("CSharp");
-                CompilerParameters cp = new CompilerParameters();
-
-                // Generate an executable instead of  
-                // a class library.
-                cp.GenerateExecutable = true;
-
-                // Set the assembly file name to generate.
-                cp.OutputAssembly = "test.exe";
-
-                // Generate debug information.
-                cp.IncludeDebugInformation = true;
-
-                // Add an assembly reference.
-                cp.ReferencedAssemblies.Add("System.dll");
-                cp.ReferencedAssemblies.Add("System.Core.dll");
-
-                // Save the assembly as a physical file.
-                cp.GenerateInMemory = false;
-
-                // Set the level at which the compiler  
-                // should start displaying warnings.
-                cp.WarningLevel = 3;
-
-                // Set whether to treat all warnings as errors.
-                cp.TreatWarningsAsErrors = false;
-
-                // Set compiler argument to optimize output.
-                cp.CompilerOptions = "/optimize";
-
-                // Set a temporary files collection. 
-                // The TempFileCollection stores the temporary files 
-                // generated during a build in the current directory, 
-                // and does not delete them after compilation.
-                cp.TempFiles = new TempFileCollection(".", true);
-                try
-                {
-                    var file = lbFilesInProj.SelectedItem as CSFile;
-
-                    var res = comp.CompileAssemblyFromFile(cp, file.Path);
-                    if (res.Errors.Count > 0)
-                    {
-                        // Display compilation errors.
-                        lbLog.Items.Insert(0, string.Format("Errors building {0}", res.PathToAssembly));
-                        foreach (CompilerError ce in res.Errors)
-                        {
-                            lbLog.Items.Insert(0, string.Format("  {0}", ce.ToString()));
-
-                        }
-                    }
-                    else
-                    {
-                        lbLog.Items.Insert(0, string.Format(string.Format(" built into {0} successfully.", res.PathToAssembly)));
-                        System.Diagnostics.Process.Start(res.PathToAssembly);
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    lbLog.Items.Insert(0, string.Format(ex.Message));
-
-                }
-            }
-            else
-            {
-                MessageBox.Show("No file selected");
-            }
-        }
-
         private void btnStartDebugExe_Click(object sender, RoutedEventArgs e)
         {
             if (lbSLNS.SelectedIndex != -1)
@@ -163,17 +89,17 @@ namespace FastSolutionEvaluator
                 if (selsol != null)
                 {
                     if (selsol.BestExePath != "null")
-                    try
-                    {
-                        var Proc = Process.Start(selsol.BestExePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        lbLog.Items.Insert(0, string.Format(ex.Message));
-                    }
-                else { lbLog.Items.Insert(0, "No build exe found"); }
+                        try
+                        {
+                            var Proc = Process.Start(selsol.BestExePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            lbLog.Items.Insert(0, string.Format(ex.Message));
+                        }
+                    else { lbLog.Items.Insert(0, "No build exe found"); }
                 }
-                
+
             }
         }
 
@@ -200,46 +126,24 @@ namespace FastSolutionEvaluator
 
         private void trycompileandRun_Click(object sender, RoutedEventArgs e)
         {
-            //// http://stackoverflow.com/questions/22227804/build-visual-studio-solution-from-code
-            //// https://bogdangavril.wordpress.com/2012/03/15/take-control-of-msbuild-using-msbuild-api/
-            ////string projectFilePath = (lbSLNS.SelectedItem as SolutionVM).PathToSln;
-
-            ////ProjectCollection pc = new ProjectCollection();
-
-            ////THERE ARE A LOT OF PROPERTIES HERE, THESE MAP TO THE MSBUILD CLI PROPERTIES
-            ////Dictionary<string, string> globalProperty = new Dictionary<string, string>();
-            ////globalProperty.Add("OutputPath", @"c:\temp");
-
-            ////BuildParameters bp = new BuildParameters(pc);
-            ////MSBuildLogger customLogger = new MSBuildLogger();
-            ////bp.Loggers = new List<ILogger>() { customLogger };
-            ////BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "14.0", new string[] { "Build" }, null);
-            ////THIS IS WHERE THE MAGIC HAPPENS -IN PROCESS MSBUILD
-            ////BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
-            ////A SIMPLE WAY TO CHECK THE RESULT
-            ////if (buildResult.OverallResult == BuildResultCode.Success)
-            ////{
-            ////    Process.Start("c:\\temp\\" + System.IO.Path.GetDirectoryName((lbSLNS.SelectedItem as SolutionVM).PathToSln) + ".exe");
-
-
-            ////}
-            ////else
-            ////{
-            ////    lbLog.Items.Insert(0, customLogger.BuildErrors);
-            ////}
-
-            try
+            if (lbSLNS.SelectedIndex != -1)
             {
-                //Todo: change output path to: http://stackoverflow.com/questions/26139757/how-to-get-actual-project-output-using-microsoft-build-evaluation-project-in-c-s
-                var sol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();
-                MessageBox.Show(System.IO.Path.Combine(sol.Project.Project.DirectoryPath, sol.Project.Project.GetPropertyValue("OutputPath").ToString()));
-                if (sol.Project.Project.Build())
-                    MessageBox.Show("Succes");
+                ProjectVM selsol = null;
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                if (lbPROJS.SelectedIndex != -1)
+                    selsol = (lbPROJS.SelectedItem as ProjectVM);
+                else
+                    selsol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();//Using first project
+                if (selsol != null)
+                {
+                    string mspath = $"\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\msbuild.exe\"";// \"{selsol.Project.Project.FullPath}\" /p:OutDir=\"{Environment.CurrentDirectory}\temp\"";
+                    var p= Process.Start(mspath);
+                   
+                }
+
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+
 
         }
 
