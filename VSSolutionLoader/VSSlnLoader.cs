@@ -27,11 +27,25 @@ namespace VSSolutionLoader
                     var slns = Directory.GetFiles(directory, "*.sln");
                     foreach (var item in slns)
                     {
-                        var sol = SolutionFile.Parse(item);
-                        var somodel = new SolutionModel(sol,item);
+                        try
+                        {
+                            var sol = SolutionFile.Parse(item);// http://answers.flyppdevportal.com/MVC/Post/Thread/c377dae1-fe1e-4635-a284-f17b3d580b69?category=msbuild
+                            var somodel = new SolutionModel(sol, item);
 
 
-                        allslns.Add(somodel);
+                            allslns.Add(somodel);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            Debug.WriteLine($"Couldn't open {item}.Error: {ex.Message}. I created a stub solution");
+                            var somodel = new SolutionModel( item, ex);
+                            allslns.Add(somodel);
+
+
+                        }
+                       
+                       
 
                     }
                 }

@@ -86,10 +86,11 @@
 
                 </ListBox.Resources>
                 <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                    <DataTemplate >
+                        <StackPanel ToolTip="{Binding SolutionName}" Orientation="Horizontal">
                             <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}"  ></Image>
                             <Image MaxHeight="20" Source="grade.jpg" Visibility="{Binding HasGradeVisibile}"  ></Image>
+                            <Image MaxHeight="20" Source="errors.png" Visibility="{Binding HasExceptions}"  ></Image>
 
                             <TextBlock Text="{Binding SolutionName}"></TextBlock>
 

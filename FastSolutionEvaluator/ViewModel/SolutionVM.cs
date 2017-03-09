@@ -31,8 +31,10 @@ namespace FastSolutionEvaluator.ViewModel
         {
             get
             {
-
-                return Path.GetFileName(solution.PathToSln).Split('.').First();
+                if(solution.Exceptions.Count==0)
+                    return Path.GetFileName(solution.PathToSln).Split('.').First();
+                return solution.PathToSln;
+               
             }
             // set { SetProperty(ref _firstName, value); }
         }
@@ -48,7 +50,17 @@ namespace FastSolutionEvaluator.ViewModel
         {
             get { return solution.PathToSln; }
         }
+        public Visibility HasExceptions
+        {
+            get
+            {
+                if (solution.Exceptions.Count > 0)
+                    return Visibility.Visible;
+                return Visibility.Hidden;
+            }
 
+
+        }
 
         public Visibility HasNoExeVisibile
         {
@@ -64,7 +76,7 @@ namespace FastSolutionEvaluator.ViewModel
                         }
 
                     }
-                   
+
                 }
                 return Visibility.Visible;
             }

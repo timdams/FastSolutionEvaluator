@@ -10,6 +10,14 @@ namespace VSSolutionLoader.Model
 {
     public class SolutionModel
     {
+        public SolutionModel(string path, Exception ex)//Used to create stub/Fake solution
+        {
+            PathToSln = path;
+            Projects = new List<ProjectModel>();
+            Solution = null;
+            Exceptions.Add(ex);
+        }
+
         public SolutionModel(SolutionFile file, string path)
         {
             PathToSln = path;
@@ -26,14 +34,17 @@ namespace VSSolutionLoader.Model
                 {
 
                     Debug.WriteLine(ex.Message);
+                    Exceptions.Add(ex);
+                    //TODO: create fake project??
                 }
 
             }
         }
         public SolutionFile Solution { get; set; }
-        public List<ProjectModel> Projects { get; set; }
+        public List<ProjectModel> Projects { get; set; } = new List<ProjectModel>();
 
         public string PathToSln { get; set; }
-        
+
+        public List<Exception> Exceptions { get; set; } = new List<Exception>();
     }
 }
