@@ -134,17 +134,65 @@ namespace FastSolutionEvaluator
                 if (lbPROJS.SelectedIndex != -1)
                     selsol = (lbPROJS.SelectedItem as ProjectVM);
                 else
+                    //TODO: allow user to choose what project(s) to build
                     selsol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();//Using first project
                 if (selsol != null)
                 {
-                    string mspath = $"\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\msbuild.exe\"";// \"{selsol.Project.Project.FullPath}\" /p:OutDir=\"{Environment.CurrentDirectory}\temp\"";
-                    var p= Process.Start(mspath);
-                   
+                    //TODO find msbuild (add to program?)
+                    string temppath = Environment.CurrentDirectory + "\\temp";
+                    //Clean temp folder:
+                    Directory.Delete(temppath, true); //TODO: is dit veilig???!
+                    string mspath = $"\"C:\\Program Files (x86)\\MSBuild\\12.0\\Bin\\msbuild.exe\"  \"{selsol.Project.Project.FullPath}\" /p:OutDir=\"{temppath}\"";
+                    //string mspath = "msbuild";
+
+
+                    var sb = new StringBuilder();
+
+                    Process p = new Process();
+
+                    // redirect the output
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.RedirectStandardError = true;
+
+                    // hookup the eventhandlers to capture the data that is received
+                    p.OutputDataReceived += (senderp, args) => sb.AppendLine(args.Data);
+                    p.ErrorDataReceived += (senderp, args) => sb.AppendLine(args.Data);
+
+                    // direct start
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.FileName = mspath;
+                    //  p.StartInfo.Arguments = $"{selsol.Project.Project.FullPath}";
+                    p.Start();
+                    // start our event pumps
+                    p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
+
+                    // until we are done
+                    p.WaitForExit();
+
+                    //TODO: Write sb to logfile
+                    if (sb.ToString().Contains("Build succeeded"))
+                    {
+                        if (MessageBoxResult.Yes == MessageBox.Show("Build successfull. Do you wish to run the compiled exe?", "Succes", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                        {
+                            var files= Directory.GetFiles(temppath);
+                            foreach (var file in files)
+                            {
+                                if (file.EndsWith("exe"))
+                                    Process.Start(file);//TODO: console screen will dissapear immediately
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+                    }
+
                 }
 
+
             }
-
-
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
