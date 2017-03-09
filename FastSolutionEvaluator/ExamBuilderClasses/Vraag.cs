@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FastSolutionEvaluator.ExamBuilderClasses
 {
-    class Vraag
+  public  class Vraag
     {
-        public string Titel { get; set; }
-        public string Beschrijving { get; set; }
-        public int Gewicht { get; set; }
-        public VraagType VraagType { get; set; }
+        public string Titel { get; set; } = "leeg";
+        public string Beschrijving { get; set; } = "leeg";
+        public int Gewicht { get; set; } = 0;
+        public VraagType VraagType { get; set; } = VraagType.TrueFalse;
     }
 }

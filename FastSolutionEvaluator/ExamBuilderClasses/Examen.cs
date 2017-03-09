@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,18 +9,18 @@ using System.Xml.Serialization;
 
 namespace FastSolutionEvaluator.ExamBuilderClasses
 {
-    class Examen
+    public class Examen
     {
         public Examen()
         {
-            Vragen = new List<Vraag>();
+            Vragen = new ObservableCollection<Vraag>();
         }
 
         public int Jaar { get; set; }
         public string Titel { get; set; }
         public string Beschrijving { get; set; }
 
-        public List<Vraag> Vragen { get; set; }
+        public ObservableCollection<Vraag> Vragen { get; set; }
 
      
     }

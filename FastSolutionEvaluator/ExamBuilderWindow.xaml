@@ -5,8 +5,97 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FastSolutionEvaluator"
         mc:Ignorable="d"
-        Title="ExamBuilderWindow" Height="300" Width="300">
+        Title="ExamBuilderWindow" Height="363.206" Width="601.21">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--RibbonBar-->
+        <Grid Grid.Row="0">
+            <Menu Background="LightBlue">
+                <MenuItem Header="Bestand...">
+                    <MenuItem Header="Laad bestand..." Click="btnOpenExamen_Click"></MenuItem>
+                    <MenuItem Header="Bewaar bestand..." Click="btnSaveExamen_Click"></MenuItem>
+                    <MenuItem Header="Clear/Nieuw" Name="btnClearAll" Click="btnClearAll_Click"></MenuItem>
+                </MenuItem>
+
+            </Menu>
+
+        </Grid>
+        <!--MainGrid-->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <!--QuestionsList-->
+            <Grid Grid.Column="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel  Grid.Row="0" Orientation="Horizontal"  Margin="5,0,0,0"  >
+                        <TextBlock>Aantal vragen:</TextBlock>
+                        <TextBlock  Text="{Binding ElementName=lbVragen, Path=Items.Count,  Mode=OneWay}"></TextBlock>
+                    </StackPanel>
+                    <ListBox Grid.Row="1" Name="lbVragen" Margin="5" ItemsSource="{Binding Vragen}" SelectionChanged="lbVragen_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition ></ColumnDefinition>
+                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Titel }" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Beschrijving }"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="1" Click="btnVerwijderVraag_Click" VerticalAlignment="Top">X</Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Grid.Row="2" Name="btnNieuweVraag" Click="btnNieuweVraag_Click">Nieuwe vraag</Button>
+                </Grid>
+            </Grid>
+            <!--QuestionDetails-->
+            <Grid Grid.Column="1" DataContext="{Binding ElementName=lbVragen, Path=SelectedItem}" IsEnabled="{Binding ElementName=lbVragen, Path=SelectedItems.Count}" Margin="5"  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+
+                    <ComboBox SelectedIndex="0"  Name="cmbTypeVraag" SelectionChanged="cmbTypeVraag_SelectionChanged" >
+                        <ComboBox.Items>
+                            <ComboBoxItem>True/False</ComboBoxItem>
+                            <ComboBoxItem>Geheelgetal</ComboBoxItem>
+                            <ComboBoxItem>Tekst</ComboBoxItem>
+                        
+                        </ComboBox.Items>
+
+                    </ComboBox>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBox Text="{Binding Titel}" MinWidth="400" FontWeight="DemiBold" TabIndex="10" />
+                        <Label FontWeight="Bold" Content="Titel:"/>
+                    </StackPanel>
+                    <Label FontWeight="Bold">Vraag:</Label>
+                    <!--<TextBox Text="{Binding QuestionText }"/>-->
+                    <TextBox Text="{Binding Beschrijving, Mode=TwoWay}" TabIndex="11"  IsReadOnly="False" MinHeight="50"></TextBox>
+                    <TextBlock>Score:</TextBlock>
+                    <TextBox Name="txbVraagScore" Text="{Binding Gewicht}"></TextBox>
+                   
+                </StackPanel>
+              
+               
+            </Grid>
+        </Grid>
+
     </Grid>
+
 </Window>
