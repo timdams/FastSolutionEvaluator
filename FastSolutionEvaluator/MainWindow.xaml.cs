@@ -53,7 +53,7 @@ namespace FastSolutionEvaluator
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 if (!File.Exists(dialog.SelectedPath + "\\koppel.xml"))
-                {                
+                {
                     var wnd = new KoppelExamenAanFolderWindow();
                     wnd.ShowDialog();
 
@@ -64,7 +64,7 @@ namespace FastSolutionEvaluator
                         k.ExamFilePath = wnd.TeKoppelenExamenPath;
                         k.FolderPath = dialog.SelectedPath;
                         XMLHelper.SaveToXml<KoppelExamen>(k, dialog.SelectedPath + "\\koppel.xml");
-                        //TODO: best file mee in folder proppen?
+                        //TODO: best file mee in folder proppen? Misschien aanbevelen aan gebruiker om dit te doen
                     }
                 }
                 else
@@ -72,8 +72,9 @@ namespace FastSolutionEvaluator
                     var koppel = XMLHelper.LoadFromXml<KoppelExamen>(dialog.SelectedPath + "\\koppel.xml");
                     GekoppeldExamen = XMLHelper.LoadFromXml<Examen>(koppel.ExamFilePath);
                     //TODO: vragen UI genereren
+                    GenerateExamVragenUI();
                 }
-               
+
 
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
@@ -82,7 +83,7 @@ namespace FastSolutionEvaluator
 
                 lbSLNS.ItemsSource = SolutionsVM.Load(dialog.SelectedPath);
 
-                
+
             }
             //TODO: implement in new eval datamode
             //if (File.Exists(evalfilepath))
@@ -99,6 +100,49 @@ namespace FastSolutionEvaluator
 
 
 
+        }
+
+        private void GenerateExamVragenUI()
+        {
+            ExamVragenLijstUI.Items.Clear();
+            foreach (var vraag in GekoppeldExamen.Vragen)
+            {
+                //               <TextBlock FontWeight="Bold">Inleiding UI (1p)</TextBlock>
+                //     < CheckBox Name = "chkbUI" Checked = "chkbUI_Click" Unchecked = "chkbUI_Click" > Hoofdmodule en resetknop IsEnabled, rest niet</ CheckBox >
+
+                //            < CheckBox Name = "chkbUI2" Checked = "chkbUI_Click" Unchecked = "chkbUI_Click" > Gebruikt groupboxes </ CheckBox >
+
+                TextBlock txbtitel = new TextBlock();
+                txbtitel.FontWeight = FontWeights.Bold;
+                txbtitel.Text = vraag.Titel;
+                ExamVragenLijstUI.Items.Add(txbtitel);
+
+                Control contr= new Control();
+                switch(vraag.VraagType)
+                {
+                    case VraagType.TrueFalse:
+                        CheckBox cb= new CheckBox();
+                        cb.Content = $"{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        contr = cb;
+                        break;
+                    case VraagType.Tekst:
+                        TextBox tb = new TextBox();
+                        tb.Text = $"{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        contr = tb;
+                        break;
+                    case VraagType.Slider:
+                        var sl = new TextBox();
+                        sl.Text = $"SLIDER: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        contr = sl;
+                        break;
+                    case VraagType.GeheelGetal:
+                        var gh = new TextBox();
+                        gh.Text = $"GEHEELGETAL: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        contr = gh;
+                        break;
+                }
+                ExamVragenLijstUI.Items.Add(contr);
+            }
         }
 
         private void btnStartDebugExe_Click(object sender, RoutedEventArgs e)
@@ -201,7 +245,7 @@ namespace FastSolutionEvaluator
                     {
                         if (MessageBoxResult.Yes == MessageBox.Show("Build successfull. Do you wish to run the compiled exe?", "Succes", MessageBoxButton.YesNo, MessageBoxImage.Question))
                         {
-                            var files= Directory.GetFiles(temppath);
+                            var files = Directory.GetFiles(temppath);
                             foreach (var file in files)
                             {
                                 if (file.EndsWith("exe"))
@@ -212,7 +256,7 @@ namespace FastSolutionEvaluator
                     }
                     else
                     {
-                        MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE",MessageBoxButton.OK,MessageBoxImage.Exclamation);
+                        MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
 
                 }
@@ -226,42 +270,7 @@ namespace FastSolutionEvaluator
             WindowState = WindowState.Maximized;
         }
 
-        private void writeResult_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbSLNS.SelectedIndex != -1)
-            {
-                string result = (lbSLNS.SelectedItem as SolutionMeta).FolderName;
-                result += ";";
-                result += (chkbUI.IsChecked == true) ? "1;" : "0;";
-                result += (chkbUI2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode4.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode5.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode6.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode7.IsChecked == true) ? "1;" : "0;";
-                result += (chkbLoop1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
-                result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
 
-                result += DateTime.Now;
-                MessageBox.Show(result);
-
-                WriteEvalStuffToFile(result, (lbSLNS.SelectedItem as SolutionMeta));
-                ResetState();
-                evalstuffchanged = false;
-            }
-            else
-                MessageBox.Show("Selecteer eerst solution");
-        }
 
         private void WriteEvalStuffToFile(string result, SolutionMeta solution)
         {
@@ -342,29 +351,7 @@ namespace FastSolutionEvaluator
             return -1;
         }
 
-        private void ResetState()
-        {
-            chkbUI.IsChecked = false;
-            chkbUI2.IsChecked = false;
-            chkbFlow1.IsChecked = false;
-            chkbFlow2.IsChecked = false;
-            chkbFlow3.IsChecked = false;
-            chkbMethode1.IsChecked = false;
-            chkbMethode2.IsChecked = false;
-            chkbMethode3.IsChecked = false;
-            chkbMethode4.IsChecked = false;
-            chkbMethode5.IsChecked = false;
-            chkbMethode6.IsChecked = false;
-            chkbMethode7.IsChecked = false;
-            chkbLoop1.IsChecked = false;
-            chkbReset1.IsChecked = false;
-            chkbReset2.IsChecked = false;
-            chkbReset3.IsChecked = false;
-            chkbReset4.IsChecked = false;
-            chkbPro1.IsChecked = false;
-            chkbPro2.IsChecked = false;
-        }
-
+      
         bool evalstuffchanged = false;
         private void chkbUI_Click(object sender, RoutedEventArgs e)
         {
