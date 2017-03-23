@@ -507,35 +507,36 @@ namespace FastSolutionEvaluator
 
         private void TryLoadScores(SolutionVM solutionVM)
         {
-           
-            string line = File_ReturnLine(solutionVM.PathToSln, evalfilepath);
-            if (line != "")
+            if (File.Exists(evalfilepath))
             {
-                //MessageBox.Show(line);
-                //Get the results
-                var csvsplit = line.Split(';');
-                int count = 0;
-                foreach (var item in ExamVragenLijstUI.Items)
+                string line = File_ReturnLine(solutionVM.PathToSln, evalfilepath);
+                if (line != "")
                 {
-                    //TODO: complete me!
-                    if(item is Control)
+                    //MessageBox.Show(line);
+                    //Get the results
+                    var csvsplit = line.Split(';');
+                    int count = 0;
+                    foreach (var item in ExamVragenLijstUI.Items)
                     {
-                        if(item is CheckBox)
+                        //TODO: complete me!
+                        if (item is Control)
                         {
-                            if (csvsplit[count] != "0")
-                                (item as CheckBox).IsChecked = true;
+                            if (item is CheckBox)
+                            {
+                                if (csvsplit[count+1] != "0")
+                                    (item as CheckBox).IsChecked = true;
+                            }
+                            count++;
                         }
-                        count++;
                     }
+
                 }
 
-
-
             }
-                    
-            }
+
         }
     }
+}
 
 
 
