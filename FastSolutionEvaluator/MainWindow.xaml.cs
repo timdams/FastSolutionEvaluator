@@ -127,12 +127,14 @@ namespace FastSolutionEvaluator
                     huidigeCategorie = vraag.Titel;
                 }
 
-                Control contr= new Control();
-                switch(vraag.VraagType)
+                Control contr = new Control();
+                
+                switch (vraag.VraagType)
                 {
                     case VraagType.TrueFalse:
-                        CheckBox cb= new CheckBox();
+                        CheckBox cb = new CheckBox();
                         cb.Content = $"{teller}:{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        cb.DataContext = vraag;
                         contr = cb;
                         break;
                     case VraagType.Tekst:
@@ -153,6 +155,45 @@ namespace FastSolutionEvaluator
                 }
                 ExamVragenLijstUI.Items.Add(contr);
                 teller++;
+            }
+
+            Button write = new Button();
+            write.HorizontalAlignment = HorizontalAlignment.Stretch;
+            write.Content = "Schrijf weg";
+            write.MinWidth = 100;
+            write.Click += WriteResults_Click;
+            ExamVragenLijstUI.Items.Add(write);
+        }
+
+        private void WriteResults_Click(object sender, RoutedEventArgs e)
+        {
+            
+            
+            if (lbSLNS.SelectedItem != null) //TODO: deze knop disablen
+            {
+                string res = "";
+                var sol = lbSLNS.SelectedItem as SolutionVM;
+                res += $"{sol.FriendlyName};";
+
+
+                foreach (var contr in ExamVragenLijstUI.Items)
+                {
+                    if (contr is Control)
+                    {
+                        if (contr is CheckBox)
+                        {
+                            //TODO: less fucked up code.Databinding+ datacontext gebruiken
+                            CheckBox chk = contr as CheckBox;
+                            if (chk.IsChecked == true) res += $"{(chk.DataContext as Vraag).Gewicht};";
+                            else res += "0;";
+                        }
+                        //TODO: andere controls wegschrijven
+
+                    }
+                }
+                res += $"{sol.PathToSln};{DateTime.Now}";
+                //MessageBox.Show(res);
+                WriteResultLine(res, evalfilepath, sol);
             }
         }
 
@@ -283,38 +324,38 @@ namespace FastSolutionEvaluator
 
 
 
-        private void WriteEvalStuffToFile(string result, SolutionMeta solution)
+        private void WriteEvalStuffToFile(string result, SolutionVM SolutionName)
         {
 
             if (File.Exists(evalfilepath))
             {
                 //TODO: write stuff away
-                int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
+                int line = GetLineNumber(File.ReadAllText(evalfilepath), SolutionName.PathToSln);
                 if (line != -1)
                 {
                     if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
                         File_DeleteLine(line, evalfilepath);
-                        WriteResultLine(result, evalfilepath, solution);
+                        WriteResultLine(result, evalfilepath, SolutionName);
 
                     }
                 }
                 {
-                    WriteResultLine(result, evalfilepath, solution);
+                    WriteResultLine(result, evalfilepath, SolutionName);
                 }
             }
             else
             {
-                WriteResultLine(result, evalfilepath, solution);
+                WriteResultLine(result, evalfilepath, SolutionName);
             }
         }
 
-        private static void WriteResultLine(string result, string evalfilepath, SolutionMeta sol)
+        private static void WriteResultLine(string result, string evalfilepath, SolutionVM sol)
         {
             var f = File.AppendText(evalfilepath);
             f.WriteLine(result);
             f.Close();
-            sol.IsEvaled = true;
+           
 
 
         }
@@ -362,7 +403,7 @@ namespace FastSolutionEvaluator
             return -1;
         }
 
-      
+
         bool evalstuffchanged = false;
         private void chkbUI_Click(object sender, RoutedEventArgs e)
         {

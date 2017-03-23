@@ -81,6 +81,20 @@ namespace FastSolutionEvaluator.ViewModel
                 return Visibility.Visible;
             }
         }
+
+        private string friendlyname = "";
+        public string FriendlyName
+        {
+            get
+            {
+                if (friendlyname == "") return this.SolutionName;
+                return friendlyname;
+            }
+            set
+            {
+                friendlyname = value;//TODO: gebruiker via rechterklik dit laten instellen
+            }
+        }
     }
 
 }
