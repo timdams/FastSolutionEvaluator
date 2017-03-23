@@ -95,5 +95,21 @@ namespace FastSolutionEvaluator
         {
             cmbTypeVraag.SelectedIndex = (int)(cmbTypeVraag.DataContext as Vraag).VraagType;
         }
+
+        private void btnMoveUp_Click(object sender, RoutedEventArgs e)
+        {
+
+
+            if(lbVragen.SelectedIndex>0)
+            HuidigeExamen.Vragen.Move(lbVragen.SelectedIndex, lbVragen.SelectedIndex - 1);
+
+        }
+
+        private void btnMoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbVragen.SelectedIndex < lbVragen.Items.Count-1)
+                HuidigeExamen.Vragen.Move(lbVragen.SelectedIndex, lbVragen.SelectedIndex + 1);
+
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace FastSolutionEvaluator.ExamBuilderClasses
     {
         public string Titel { get; set; } = "leeg";
         public string Beschrijving { get; set; } = "leeg";
-        public int Gewicht { get; set; } = 0;
+        public int Gewicht { get; set; } = 1;
         public VraagType VraagType { get; set; } = VraagType.TrueFalse;
 
         

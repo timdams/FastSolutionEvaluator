@@ -46,15 +46,19 @@
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition ></ColumnDefinition>
-                                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                                        <ColumnDefinition Width="3*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel >
-                                        <Image Visibility="{Binding IsEvaledVis}" Source="grade.jpg" ></Image>
                                         <TextBlock Text="{Binding Titel }" FontWeight="Bold" />
                                         <TextBlock Text="{Binding Beschrijving }"/>
+                                        
                                     </StackPanel>
-                                    <Button Grid.Column="1" Click="btnVerwijderVraag_Click" VerticalAlignment="Top">X</Button>
+                                    <StackPanel Grid.Column="1" Orientation="Vertical">
+                                        <Button Name="btnMoveUp" Click="btnMoveUp_Click">Move up</Button>
+                                        <Button Grid.Column="1" Click="btnVerwijderVraag_Click" VerticalAlignment="Top">X</Button>
+                                        <Button Name="btnMoveDown" Click="btnMoveDown_Click">Move down</Button>
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

@@ -168,13 +168,14 @@ namespace FastSolutionEvaluator
                 teller++;
             }
 
-            Button write = new Button();
+            write = new Button();
             write.HorizontalAlignment = HorizontalAlignment.Stretch;
             write.Content = "Schrijf weg";
             write.MinWidth = 100;
             write.Click += WriteResults_Click;
             ExamVragenLijstUI.Items.Add(write);
         }
+        Button write;
         private void ClearExamUIControls()
         {
             //Todo: bewaren?
