@@ -50,6 +50,7 @@
                                         <ColumnDefinition Width="auto"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel >
+                                        <Image Visibility="{Binding IsEvaledVis}" Source="grade.jpg" ></Image>
                                         <TextBlock Text="{Binding Titel }" FontWeight="Bold" />
                                         <TextBlock Text="{Binding Beschrijving }"/>
                                     </StackPanel>

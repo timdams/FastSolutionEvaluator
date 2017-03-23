@@ -95,6 +95,31 @@ namespace FastSolutionEvaluator.ViewModel
                 friendlyname = value;//TODO: gebruiker via rechterklik dit laten instellen
             }
         }
+
+        private bool iseval;
+        public bool IsEvaled
+        {
+            get
+            {
+                return iseval;
+            }
+
+            set
+            {
+                SetProperty(ref iseval, value, "IsEvaledVis");
+                
+            }
+        }
+
+        public Visibility IsEvaledVis
+        {
+            get
+            {
+               if(IsEvaled==false)  return Visibility.Hidden;
+ 
+                return Visibility.Visible;
+            }
+        }
     }
 
 }

@@ -83,22 +83,23 @@ namespace FastSolutionEvaluator
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
 
-                var allslns = new List<SolutionVM>();
+                List<SolutionVM> allslns = SolutionsVM.Load(dialog.SelectedPath);
 
-                lbSLNS.ItemsSource = SolutionsVM.Load(dialog.SelectedPath);
+                lbSLNS.ItemsSource = allslns;
 
 
+
+                //TODO: implement in new eval datamode
+                if (File.Exists(evalfilepath))
+                {  //Update eval status
+                    string logfile = File.ReadAllText(evalfilepath);
+                    foreach (var solution in allslns)
+                    {
+                        if (GetLineNumber(logfile, solution.PathToSln) > -1)
+                            solution.IsEvaled = true;
+                    }
+                }
             }
-            //TODO: implement in new eval datamode
-            //if (File.Exists(evalfilepath))
-            //{  //Update eval status
-            //    string logfile = File.ReadAllText(evalfilepath);
-            //    foreach (var solution in allslns)
-            //    {
-            //        if (GetLineNumber(logfile, solution.FolderName) > -1)
-            //            solution.IsEvaled = true;
-            //    }
-            //}
             //Show it
 
 
@@ -355,7 +356,7 @@ namespace FastSolutionEvaluator
             var f = File.AppendText(evalfilepath);
             f.WriteLine(result);
             f.Close();
-           
+            sol.IsEvaled = true;
 
 
         }
