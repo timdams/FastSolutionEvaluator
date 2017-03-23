@@ -81,8 +81,9 @@
 
                     </ComboBox>
                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <Label FontWeight="Bold" Content="Categorie:"/>
                         <TextBox Text="{Binding Titel}" MinWidth="400" FontWeight="DemiBold" TabIndex="10" />
-                        <Label FontWeight="Bold" Content="Titel:"/>
+                       
                     </StackPanel>
                     <Label FontWeight="Bold">Vraag:</Label>
                     <!--<TextBox Text="{Binding QuestionText }"/>-->

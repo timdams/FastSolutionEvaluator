@@ -77,6 +77,11 @@ namespace FastSolutionEvaluator
         private void btnNieuweVraag_Click(object sender, RoutedEventArgs e)
         {
             HuidigeExamen.Vragen.Add(new Vraag());
+
+            if(HuidigeExamen.Vragen.Count>=2)
+            {
+                HuidigeExamen.Vragen.Last().Titel = HuidigeExamen.Vragen[ HuidigeExamen.Vragen.Count - 2].Titel;
+            }
             
         }
 

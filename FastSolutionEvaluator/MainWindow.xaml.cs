@@ -65,6 +65,10 @@ namespace FastSolutionEvaluator
                         k.FolderPath = dialog.SelectedPath;
                         XMLHelper.SaveToXml<KoppelExamen>(k, dialog.SelectedPath + "\\koppel.xml");
                         //TODO: best file mee in folder proppen? Misschien aanbevelen aan gebruiker om dit te doen
+                        var koppel = XMLHelper.LoadFromXml<KoppelExamen>(dialog.SelectedPath + "\\koppel.xml");
+                        GekoppeldExamen = XMLHelper.LoadFromXml<Examen>(koppel.ExamFilePath);
+                        //TODO: vragen UI genereren
+                        GenerateExamVragenUI();
                     }
                 }
                 else
@@ -104,6 +108,8 @@ namespace FastSolutionEvaluator
 
         private void GenerateExamVragenUI()
         {
+            int teller = 1;
+            string huidigeCategorie = "BLIBLIABA";
             ExamVragenLijstUI.Items.Clear();
             foreach (var vraag in GekoppeldExamen.Vragen)
             {
@@ -112,36 +118,41 @@ namespace FastSolutionEvaluator
 
                 //            < CheckBox Name = "chkbUI2" Checked = "chkbUI_Click" Unchecked = "chkbUI_Click" > Gebruikt groupboxes </ CheckBox >
 
-                TextBlock txbtitel = new TextBlock();
-                txbtitel.FontWeight = FontWeights.Bold;
-                txbtitel.Text = vraag.Titel;
-                ExamVragenLijstUI.Items.Add(txbtitel);
+                if (huidigeCategorie != vraag.Titel)
+                {
+                    TextBlock txbtitel = new TextBlock();
+                    txbtitel.FontWeight = FontWeights.Bold;
+                    txbtitel.Text = vraag.Titel;
+                    ExamVragenLijstUI.Items.Add(txbtitel);
+                    huidigeCategorie = vraag.Titel;
+                }
 
                 Control contr= new Control();
                 switch(vraag.VraagType)
                 {
                     case VraagType.TrueFalse:
                         CheckBox cb= new CheckBox();
-                        cb.Content = $"{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        cb.Content = $"{teller}:{vraag.Beschrijving} ({vraag.Gewicht} p)";
                         contr = cb;
                         break;
                     case VraagType.Tekst:
                         TextBox tb = new TextBox();
-                        tb.Text = $"{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        tb.Text = $"{teller}:{vraag.Beschrijving} ({vraag.Gewicht} p)";
                         contr = tb;
                         break;
                     case VraagType.Slider:
                         var sl = new TextBox();
-                        sl.Text = $"SLIDER: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        sl.Text = $"{teller}:SLIDER: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
                         contr = sl;
                         break;
                     case VraagType.GeheelGetal:
                         var gh = new TextBox();
-                        gh.Text = $"GEHEELGETAL: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        gh.Text = $"{teller}:GEHEELGETAL: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
                         contr = gh;
                         break;
                 }
                 ExamVragenLijstUI.Items.Add(contr);
+                teller++;
             }
         }
 
