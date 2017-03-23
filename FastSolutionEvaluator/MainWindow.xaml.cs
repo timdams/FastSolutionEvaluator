@@ -43,6 +43,11 @@ namespace FastSolutionEvaluator
 
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
+
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
 
@@ -107,6 +112,11 @@ namespace FastSolutionEvaluator
 
         }
 
+        private void btnOpenExamBuilder_Click(object sender, RoutedEventArgs e)
+        {
+            ExamBuilderWindow wnd = new ExamBuilderWindow();
+            wnd.ShowDialog();
+        }
         private void GenerateExamVragenUI()
         {
             int teller = 1;
@@ -129,7 +139,7 @@ namespace FastSolutionEvaluator
                 }
 
                 Control contr = new Control();
-                
+
                 switch (vraag.VraagType)
                 {
                     case VraagType.TrueFalse:
@@ -165,11 +175,20 @@ namespace FastSolutionEvaluator
             write.Click += WriteResults_Click;
             ExamVragenLijstUI.Items.Add(write);
         }
+        private void ClearExamUIControls()
+        {
+            //Todo: bewaren?
 
+            foreach (var item in ExamVragenLijstUI.Items)
+            {
+                if (item is CheckBox) (item as CheckBox).IsChecked = false;
+                else if (item is TextBox) (item as TextBox).Text = "";
+            }
+        }
         private void WriteResults_Click(object sender, RoutedEventArgs e)
         {
-            
-            
+            //TODO: keep this in sync with  reading results from the csv!
+
             if (lbSLNS.SelectedItem != null) //TODO: deze knop disablen
             {
                 string res = "";
@@ -194,10 +213,11 @@ namespace FastSolutionEvaluator
                 }
                 res += $"{sol.PathToSln};{DateTime.Now}";
                 //MessageBox.Show(res);
-                WriteResultLine(res, evalfilepath, sol);
+                //WriteResultLine(res, evalfilepath, sol);
+                WriteEvalStuffToFile(res, sol);
             }
         }
-
+        #region main actions on top menu
         private void btnStartDebugExe_Click(object sender, RoutedEventArgs e)
         {
             if (lbSLNS.SelectedIndex != -1)
@@ -225,8 +245,6 @@ namespace FastSolutionEvaluator
 
             }
         }
-
-
 
         private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
         {
@@ -305,28 +323,21 @@ namespace FastSolutionEvaluator
                                     Process.Start(file);//TODO: console screen will dissapear immediately
                             }
                         }
-
                     }
                     else
                     {
                         MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
-
                 }
-
-                
             }
         }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Maximized;
-        }
+        #endregion
 
 
-
+        #region write exam eval stuff to file
         private void WriteEvalStuffToFile(string result, SolutionVM SolutionName)
         {
+            //TODO: sanitize stuff so no ';' are inside the stuff to write away
 
             if (File.Exists(evalfilepath))
             {
@@ -359,6 +370,24 @@ namespace FastSolutionEvaluator
             sol.IsEvaled = true;
 
 
+        }
+
+        string File_ReturnLine(string Line, string path)
+        {
+            using (StreamReader sr = new StreamReader(path))
+            {
+                int Countup = 0;
+                while (!sr.EndOfStream)
+                {
+                    Countup++;
+                    string line = sr.ReadLine();
+                    if (line.Contains(Line))
+                    {
+                        return line;
+                    }
+                }
+            }
+            return "";
         }
 
         void File_DeleteLine(int Line, string Path)
@@ -403,13 +432,7 @@ namespace FastSolutionEvaluator
             }
             return -1;
         }
-
-
-        bool evalstuffchanged = false;
-        private void chkbUI_Click(object sender, RoutedEventArgs e)
-        {
-            evalstuffchanged = true;
-        }
+        #endregion
 
         private void lbFilesInProj_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -421,6 +444,7 @@ namespace FastSolutionEvaluator
             }
         }
 
+        #region rightclick context menu
         private void OpenSolutionInVS_Click(object sender, RoutedEventArgs e)
         {
             if (lbSLNS.SelectedItem != null)
@@ -455,7 +479,7 @@ namespace FastSolutionEvaluator
             if (lbFilesInProj.SelectedItem != null)
                 Process.Start("notepad.exe", (lbFilesInProj.SelectedItem as FileVM).Path);
         }
-
+        #endregion
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -467,14 +491,52 @@ namespace FastSolutionEvaluator
             }
         }
 
-        private void btnOpenExamBuilder_Click(object sender, RoutedEventArgs e)
+
+        private void lbSLNS_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ExamBuilderWindow wnd = new ExamBuilderWindow();
-            wnd.ShowDialog();
+            if (lbSLNS.SelectedIndex > -1)
+            {
+                //Clear ExamUI stuff 
+                ClearExamUIControls();
+
+                //Load scores?
+                TryLoadScores(lbSLNS.SelectedItem as SolutionVM);
+            }
+        }
+
+        private void TryLoadScores(SolutionVM solutionVM)
+        {
+           
+            string line = File_ReturnLine(solutionVM.PathToSln, evalfilepath);
+            if (line != "")
+            {
+                //MessageBox.Show(line);
+                //Get the results
+                var csvsplit = line.Split(';');
+                int count = 0;
+                foreach (var item in ExamVragenLijstUI.Items)
+                {
+                    //TODO: complete me!
+                    if(item is Control)
+                    {
+                        if(item is CheckBox)
+                        {
+                            if (csvsplit[count] != "0")
+                                (item as CheckBox).IsChecked = true;
+                        }
+                        count++;
+                    }
+                }
+
+
+
+            }
+                    
+            }
         }
     }
 
 
 
 
-}
+

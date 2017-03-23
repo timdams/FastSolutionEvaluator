@@ -71,7 +71,7 @@
                 <ColumnDefinition Width="3*"></ColumnDefinition>
 
             </Grid.ColumnDefinitions>
-            <ListBox Name="lbSLNS" >
+            <ListBox Name="lbSLNS" SelectionChanged="lbSLNS_SelectionChanged" >
                 <ListBox.Resources>
 
                     <!--Defines a context menu-->
