@@ -27,6 +27,7 @@ namespace FastSolutionEvaluator
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+            //TODO: Save output for future reference
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

@@ -237,11 +237,17 @@ namespace FastSolutionEvaluator
                         try
                         {
                             //TODO: if( only with console)
-                            ConsoleWindow wnd = new ConsoleWindow();
-                            wnd.PathToProc = selsol.BestExePath;
-                            wnd.Show();
-                            //TODO: ELSE
-                            // var Proc = Process.Start(selsol.BestExePath);
+                            if (selsol.ProjectOutputType == OutputType.Console)
+                            {
+                                ConsoleWindow wnd = new ConsoleWindow();
+                                wnd.PathToProc = selsol.BestExePath;
+                                wnd.Show();
+                            }
+                            else
+                            {
+                             
+                                 var Proc = Process.Start(selsol.BestExePath);
+                            }
 
                         }
                         catch (Exception ex)

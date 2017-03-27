@@ -20,7 +20,20 @@ namespace FastSolutionEvaluator.ViewModel
             {
                 relevantFiles.Add(new FileVM(file));
             }
+            
            // string n = proj.Project.Properties.Where(p => p.Name == "MSBuildProjectName").FirstOrDefault().EvaluatedValue;
+        }
+
+        public OutputType ProjectOutputType
+        {
+            get
+            {
+                var res = proj.Project.Properties.Where(p => p.Name == "OutputType").First();
+
+                if (res.EvaluatedValue == "Exe") return OutputType.Console;
+                else if (res.EvaluatedValue == "WinExe") return OutputType.Windows;
+                return OutputType.Unknown;
+            }
         }
 
         public string ProjectName
@@ -63,4 +76,6 @@ namespace FastSolutionEvaluator.ViewModel
        
 
     }
+
+    public enum OutputType {  Console, Windows, Unknown };
 }
