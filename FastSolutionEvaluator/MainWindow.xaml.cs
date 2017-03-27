@@ -27,6 +27,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using FastSolutionEvaluator.utility.msbuild;
 using FastSolutionEvaluator.ViewModel;
 using FastSolutionEvaluator.ExamBuilderClasses;
+using FastSolutionEvaluator.utility;
 
 namespace FastSolutionEvaluator
 {
@@ -235,7 +236,10 @@ namespace FastSolutionEvaluator
                     if (selsol.BestExePath != "null")
                         try
                         {
-                            var Proc = Process.Start(selsol.BestExePath);
+                            ConsoleOutputAndLogger log = new ConsoleOutputAndLogger(selsol.BestExePath, "test.log");
+                            log.Run();
+                            // var Proc = Process.Start(selsol.BestExePath);
+
                         }
                         catch (Exception ex)
                         {
