@@ -25,6 +25,9 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using ICSharpCode.AvalonEdit.Highlighting;
 using FastSolutionEvaluator.utility.msbuild;
+using FastSolutionEvaluator.ViewModel;
+using FastSolutionEvaluator.ExamBuilderClasses;
+using FastSolutionEvaluator.utility;
 
 namespace FastSolutionEvaluator
 {
@@ -34,9 +37,16 @@ namespace FastSolutionEvaluator
     public partial class MainWindow : Window
     {
         string evalfilepath = Properties.Settings.Default.LastPath + "\\evalsresults.csv";
+        public Examen GekoppeldExamen { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
@@ -48,212 +58,207 @@ namespace FastSolutionEvaluator
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                if (!File.Exists(dialog.SelectedPath + "\\koppel.xml"))
+                {
+                    var wnd = new KoppelExamenAanFolderWindow();
+                    wnd.ShowDialog();
+
+                    if (wnd.TeKoppelenExamenPath != "")
+                    {
+
+                        KoppelExamen k = new KoppelExamen();
+                        k.ExamFilePath = wnd.TeKoppelenExamenPath;
+                        k.FolderPath = dialog.SelectedPath;
+                        XMLHelper.SaveToXml<KoppelExamen>(k, dialog.SelectedPath + "\\koppel.xml");
+                        //TODO: best file mee in folder proppen? Misschien aanbevelen aan gebruiker om dit te doen
+                        var koppel = XMLHelper.LoadFromXml<KoppelExamen>(dialog.SelectedPath + "\\koppel.xml");
+                        GekoppeldExamen = XMLHelper.LoadFromXml<Examen>(koppel.ExamFilePath);
+                        //TODO: vragen UI genereren
+                        GenerateExamVragenUI();
+                    }
+                }
+                else
+                {
+                    var koppel = XMLHelper.LoadFromXml<KoppelExamen>(dialog.SelectedPath + "\\koppel.xml");
+                    GekoppeldExamen = XMLHelper.LoadFromXml<Examen>(koppel.ExamFilePath);
+                    //TODO: vragen UI genereren
+                    GenerateExamVragenUI();
+                }
+
 
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
 
-                var allslns = new List<SolutionMeta>();
-                foreach (var directory in Directory.GetDirectories(dialog.SelectedPath, "*.*", SearchOption.AllDirectories))
-                {
-                    if (Directory.GetFiles(directory, "*.sln").Count() > 0)
-                    {
-                        var sln = new SolutionMeta(directory);
+                List<SolutionVM> allslns = SolutionsVM.Load(dialog.SelectedPath);
 
-
-                        //Find .csproj file 
-                        //Improve: parse this info from .sln file
-                        var respr = Directory.GetFiles(directory, "*.csproj", SearchOption.AllDirectories);
-                        foreach (var proj in respr)
-                        {
-                            var project = new CSPROJ();
-                            project.FileName = proj.Split('\\').Last();
+                lbSLNS.ItemsSource = allslns;
 
 
 
-                            var res = Directory.GetFiles(System.IO.Path.GetDirectoryName(proj), "*.cs", SearchOption.AllDirectories);
-                            foreach (var re in res)
-                            {
-                                var cs = new CSFile();
-                                cs.Path = re;
-                                if (cs.Path.Contains("AssemblyInfo") ||
-                                    cs.Path.Contains("TemporaryGeneratedFile") || cs.Path.Contains("App.xaml") || cs.Path.EndsWith(".g.cs") || cs.Path.EndsWith(".i.cs") || cs.Path.EndsWith(".Designer.cs"))
-                                    continue;
-                                cs.Content = File.ReadAllText(re);
-                                project.CSFiles.Add(cs);
-                            }
-                            project.CSFiles =
-                                project.CSFiles.OrderByDescending(p => p.FileName.ToLower().Contains("program.cs"))
-                                       .ThenBy(p => p.FileName)
-                                       .ToList();
-                            var xaml = Directory.GetFiles(System.IO.Path.GetDirectoryName(proj), "*.xaml", SearchOption.AllDirectories);
-                            foreach (var re in xaml)
-                            {
-                                var cs = new CSFile();
-                                cs.Path = re;
-                                if (cs.Path.Contains("App.xaml") || cs.Path.EndsWith(".i.xaml"))
-                                    continue;
-                                cs.Content = File.ReadAllText(re);
-                                project.CSFiles.Add(cs);
-                            }
-
-                            sln.Csprojs.Add(project);
-
-                        }
-                        allslns.Add(sln);
-                    }
-
-                }
+                //TODO: implement in new eval datamode
                 if (File.Exists(evalfilepath))
                 {  //Update eval status
                     string logfile = File.ReadAllText(evalfilepath);
                     foreach (var solution in allslns)
                     {
-                        if (GetLineNumber(logfile, solution.FolderName) > -1)
+                        if (GetLineNumber(logfile, solution.PathToSln) > -1)
                             solution.IsEvaled = true;
                     }
                 }
-                //Show it
-
-                lbSLNS.ItemsSource = allslns;
-
             }
+            //Show it
+
+
+
+
         }
 
-        private void LbSLNS_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnOpenExamBuilder_Click(object sender, RoutedEventArgs e)
         {
-
-            if (lbSLNS.SelectedIndex != -1)
-            {
-                lbPROJS.ItemsSource = (lbSLNS.SelectedItem as SolutionMeta).Csprojs;
-                lbLog.Items.Insert(0, (lbSLNS.SelectedItem as SolutionMeta).FullPath);
-                if (lbPROJS.Items.Count > 0)
-                    lbPROJS.SelectedIndex = 0;
-            }
+            ExamBuilderWindow wnd = new ExamBuilderWindow();
+            wnd.ShowDialog();
         }
-
-        private void LbPROJS_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GenerateExamVragenUI()
         {
-            if (lbPROJS.SelectedIndex != -1)
+            int teller = 1;
+            string huidigeCategorie = "BLIBLIABA";
+            ExamVragenLijstUI.Items.Clear();
+            foreach (var vraag in GekoppeldExamen.Vragen)
             {
-                lbFilesInSLN.ItemsSource = (lbPROJS.SelectedItem as CSPROJ).CSFiles;
-                if (lbFilesInSLN.Items.Count > 0)
-                    lbFilesInSLN.SelectedIndex = 0;
-            }
-        }
+                //               <TextBlock FontWeight="Bold">Inleiding UI (1p)</TextBlock>
+                //     < CheckBox Name = "chkbUI" Checked = "chkbUI_Click" Unchecked = "chkbUI_Click" > Hoofdmodule en resetknop IsEnabled, rest niet</ CheckBox >
 
-        private void LbFilesInSLN_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lbFilesInSLN.SelectedIndex != -1)
-            {
-                //https://github.com/icsharpcode/AvalonEdit/blob/master/ICSharpCode.AvalonEdit/Highlighting/Resources/Resources.cs
-                // http://midnightprogrammer.net/post/Syntax-Highlighter-In-WPF/
-                fileView.Load((lbFilesInSLN.SelectedItem as CSFile).Path);
-                if (((lbFilesInSLN.SelectedItem as CSFile).FileName.EndsWith("xaml")))
-                    fileView.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("XML");
-                else
-                    fileView.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
-            }
-        }
+                //            < CheckBox Name = "chkbUI2" Checked = "chkbUI_Click" Unchecked = "chkbUI_Click" > Gebruikt groupboxes </ CheckBox >
 
-
-        private void TryRunBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (lbFilesInSLN.SelectedIndex != -1)
-            {
-                //Here comes silly code
-                CodeDomProvider comp = CodeDomProvider.CreateProvider("CSharp");
-                CompilerParameters cp = new CompilerParameters();
-
-                // Generate an executable instead of  
-                // a class library.
-                cp.GenerateExecutable = true;
-
-                // Set the assembly file name to generate.
-                cp.OutputAssembly = "test.exe";
-
-                // Generate debug information.
-                cp.IncludeDebugInformation = true;
-
-                // Add an assembly reference.
-                cp.ReferencedAssemblies.Add("System.dll");
-                cp.ReferencedAssemblies.Add("System.Core.dll");
-
-                // Save the assembly as a physical file.
-                cp.GenerateInMemory = false;
-
-                // Set the level at which the compiler  
-                // should start displaying warnings.
-                cp.WarningLevel = 3;
-
-                // Set whether to treat all warnings as errors.
-                cp.TreatWarningsAsErrors = false;
-
-                // Set compiler argument to optimize output.
-                cp.CompilerOptions = "/optimize";
-
-                // Set a temporary files collection. 
-                // The TempFileCollection stores the temporary files 
-                // generated during a build in the current directory, 
-                // and does not delete them after compilation.
-                cp.TempFiles = new TempFileCollection(".", true);
-                try
+                if (huidigeCategorie != vraag.Titel)
                 {
-                    var file = lbFilesInSLN.SelectedItem as CSFile;
+                    TextBlock txbtitel = new TextBlock();
+                    txbtitel.FontWeight = FontWeights.Bold;
+                    txbtitel.Text = vraag.Titel;
+                    ExamVragenLijstUI.Items.Add(txbtitel);
+                    huidigeCategorie = vraag.Titel;
+                }
 
-                    var res = comp.CompileAssemblyFromFile(cp, file.Path);
-                    if (res.Errors.Count > 0)
+                Control contr = new Control();
+
+                switch (vraag.VraagType)
+                {
+                    case VraagType.TrueFalse:
+                        CheckBox cb = new CheckBox();
+                        cb.Content = $"{teller}:{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        cb.DataContext = vraag;
+                        contr = cb;
+                        break;
+                    case VraagType.Tekst:
+                        TextBox tb = new TextBox();
+                        tb.Text = $"{teller}:{vraag.Beschrijving} ({vraag.Gewicht} p)";
+                        contr = tb;
+                        break;
+                    case VraagType.Slider:
+                        var sl = new TextBox();
+                        sl.Text = $"{teller}:SLIDER: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        contr = sl;
+                        break;
+                    case VraagType.GeheelGetal:
+                        var gh = new TextBox();
+                        gh.Text = $"{teller}:GEHEELGETAL: {vraag.Beschrijving} ({vraag.Gewicht} p)[NOG NIET WERKENDE]";
+                        contr = gh;
+                        break;
+                }
+                ExamVragenLijstUI.Items.Add(contr);
+                teller++;
+            }
+
+            write = new Button();
+            write.HorizontalAlignment = HorizontalAlignment.Stretch;
+            write.Content = "Schrijf weg";
+            write.MinWidth = 100;
+            write.Click += WriteResults_Click;
+            ExamVragenLijstUI.Items.Add(write);
+        }
+        Button write;
+        private void ClearExamUIControls()
+        {
+            //Todo: bewaren?
+
+            foreach (var item in ExamVragenLijstUI.Items)
+            {
+                if (item is CheckBox) (item as CheckBox).IsChecked = false;
+                else if (item is TextBox) (item as TextBox).Text = "";
+            }
+        }
+        private void WriteResults_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: keep this in sync with  reading results from the csv!
+
+            if (lbSLNS.SelectedItem != null) //TODO: deze knop disablen
+            {
+                string res = "";
+                var sol = lbSLNS.SelectedItem as SolutionVM;
+                res += $"{sol.FriendlyName};";
+
+
+                foreach (var contr in ExamVragenLijstUI.Items)
+                {
+                    if (contr is Control)
                     {
-                        // Display compilation errors.
-                        lbLog.Items.Insert(0, string.Format("Errors building {0}", res.PathToAssembly));
-                        foreach (CompilerError ce in res.Errors)
+                        if (contr is CheckBox)
                         {
-                            lbLog.Items.Insert(0, string.Format("  {0}", ce.ToString()));
-
+                            //TODO: less fucked up code.Databinding+ datacontext gebruiken
+                            CheckBox chk = contr as CheckBox;
+                            if (chk.IsChecked == true) res += $"{(chk.DataContext as Vraag).Gewicht};";
+                            else res += "0;";
                         }
-                    }
-                    else
-                    {
-                        lbLog.Items.Insert(0, string.Format(string.Format(" built into {0} successfully.", res.PathToAssembly)));
-                        System.Diagnostics.Process.Start(res.PathToAssembly);
+                        //TODO: andere controls wegschrijven
 
                     }
                 }
-                catch (Exception ex)
-                {
-                    lbLog.Items.Insert(0, string.Format(ex.Message));
-
-                }
-            }
-            else
-            {
-                MessageBox.Show("No file selected");
+                res += $"{sol.PathToSln};{DateTime.Now}";
+                //MessageBox.Show(res);
+                //WriteResultLine(res, evalfilepath, sol);
+                WriteEvalStuffToFile(res, sol);
             }
         }
-
+        #region main actions on top menu
         private void btnStartDebugExe_Click(object sender, RoutedEventArgs e)
         {
             if (lbSLNS.SelectedIndex != -1)
             {
-
+                ProjectVM selsol = null;
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
-                SolutionMeta selsol = (lbSLNS.SelectedItem as SolutionMeta);
+                if (lbPROJS.SelectedIndex != -1)
+                    selsol = (lbPROJS.SelectedItem as ProjectVM);
+                else
+                    selsol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();//Using first project
+                if (selsol != null)
+                {
+                    if (selsol.BestExePath != "null")
+                        try
+                        {
+                            //TODO: if( only with console)
+                            if (selsol.ProjectOutputType == OutputType.Console)
+                            {
+                                ConsoleWindow wnd = new ConsoleWindow();
+                                wnd.PathToProc = selsol.BestExePath;
+                                wnd.Show();
+                            }
+                            else
+                            {
+                             
+                                 var Proc = Process.Start(selsol.BestExePath);
+                            }
 
+                        }
+                        catch (Exception ex)
+                        {
+                            lbLog.Items.Insert(0, string.Format(ex.Message));
+                        }
+                    else { lbLog.Items.Insert(0, "No build exe found"); }
+                }
 
-                if (selsol.BestExePath != "null")
-                    try
-                    {
-                        var Proc = Process.Start(selsol.BestExePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        lbLog.Items.Insert(0, string.Format(ex.Message));
-                    }
-                else { lbLog.Items.Insert(0, "No build exe found"); }
             }
         }
-
-
 
         private void btnOpenInVS_Click(object sender, RoutedEventArgs e)
         {
@@ -262,11 +267,12 @@ namespace FastSolutionEvaluator
 
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
-                string debugp = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
+                string debugp = (lbSLNS.SelectedItem as SolutionVM).PathToSln;
                 try
                 {
                     Process.Start(debugp);
-                }catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     lbLog.Items.Insert(0, ex.Message);
                 }
@@ -275,104 +281,102 @@ namespace FastSolutionEvaluator
 
         private void trycompileandRun_Click(object sender, RoutedEventArgs e)
         {
-            // http://stackoverflow.com/questions/22227804/build-visual-studio-solution-from-code
-            // https://bogdangavril.wordpress.com/2012/03/15/take-control-of-msbuild-using-msbuild-api/
-            string projectFilePath = (lbSLNS.SelectedItem as SolutionMeta).FullPath + "\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".sln";
-
-            ProjectCollection pc = new ProjectCollection();
-
-            // THERE ARE A LOT OF PROPERTIES HERE, THESE MAP TO THE MSBUILD CLI PROPERTIES
-            Dictionary<string, string> globalProperty = new Dictionary<string, string>();
-            globalProperty.Add("OutputPath", @"c:\temp");
-
-            BuildParameters bp = new BuildParameters(pc);
-            MSBuildLogger customLogger = new MSBuildLogger();
-            bp.Loggers = new List<ILogger>() { customLogger };
-            BuildRequestData buildRequest = new BuildRequestData(projectFilePath, globalProperty, "14.0", new string[] { "Build" }, null);
-            // THIS IS WHERE THE MAGIC HAPPENS - IN PROCESS MSBUILD
-            BuildResult buildResult = BuildManager.DefaultBuildManager.Build(bp, buildRequest);
-            // A SIMPLE WAY TO CHECK THE RESULT
-            if (buildResult.OverallResult == BuildResultCode.Success)
-            {
-                Process.Start("c:\\temp\\" + (lbSLNS.SelectedItem as SolutionMeta).FolderName + ".exe");
-
-
-            }
-            else
-            {
-                lbLog.Items.Insert(0, customLogger.BuildErrors);
-            }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Maximized;
-        }
-
-        private void writeResult_Click(object sender, RoutedEventArgs e)
-        {
             if (lbSLNS.SelectedIndex != -1)
             {
-                string result = (lbSLNS.SelectedItem as SolutionMeta).FolderName;
-                result += ";";
-                result += (chkbUI.IsChecked == true) ? "1;" : "0;";
-                result += (chkbUI2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbFlow3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode4.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode5.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode6.IsChecked == true) ? "1;" : "0;";
-                result += (chkbMethode7.IsChecked == true) ? "1;" : "0;";
-                result += (chkbLoop1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset2.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset3.IsChecked == true) ? "1;" : "0;";
-                result += (chkbReset4.IsChecked == true) ? "1;" : "0;";
-                result += (chkbPro1.IsChecked == true) ? "1;" : "0;";
-                result += (chkbPro2.IsChecked == true) ? "1;" : "0;";
-                
-                result += DateTime.Now;
-                MessageBox.Show(result);
-              
-                WriteEvalStuffToFile(result, (lbSLNS.SelectedItem as SolutionMeta));
-                ResetState();
-                evalstuffchanged = false;
-            }
-            else
-                MessageBox.Show("Selecteer eerst solution");
-        }
+                ProjectVM selsol = null;
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                if (lbPROJS.SelectedIndex != -1)
+                    selsol = (lbPROJS.SelectedItem as ProjectVM);
+                else
+                    //TODO: allow user to choose what project(s) to build
+                    selsol = (lbSLNS.SelectedItem as SolutionVM).Projects.First();//Using first project
+                if (selsol != null)
+                {
+                    //TODO find msbuild (add to program?)
+                    string temppath = Environment.CurrentDirectory + "\\temp";
+                    //Clean temp folder:
+                    Directory.Delete(temppath, true); //TODO: is dit veilig???!
+                    string mspath = $"\"C:\\Program Files (x86)\\MSBuild\\12.0\\Bin\\msbuild.exe\"  \"{selsol.Project.Project.FullPath}\" /p:OutDir=\"{temppath}\"";
+                    //string mspath = "msbuild";
 
-        private  void WriteEvalStuffToFile(string result, SolutionMeta solution )
+
+                    var sb = new StringBuilder();
+
+                    Process p = new Process();
+
+                    // redirect the output
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.RedirectStandardError = true;
+
+                    // hookup the eventhandlers to capture the data that is received
+                    p.OutputDataReceived += (senderp, args) => sb.AppendLine(args.Data);
+                    p.ErrorDataReceived += (senderp, args) => sb.AppendLine(args.Data);
+
+                    // direct start
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.FileName = mspath;
+                    //  p.StartInfo.Arguments = $"{selsol.Project.Project.FullPath}";
+                    p.Start();
+                    // start our event pumps
+                    p.BeginOutputReadLine();
+                    p.BeginErrorReadLine();
+
+                    // until we are done
+                    p.WaitForExit();
+
+                    //TODO: Write sb to logfile
+                    if (sb.ToString().Contains("Build succeeded"))
+                    {
+                        if (MessageBoxResult.Yes == MessageBox.Show("Build successfull. Do you wish to run the compiled exe?", "Succes", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                        {
+                            var files = Directory.GetFiles(temppath);
+                            foreach (var file in files)
+                            {
+                                if (file.EndsWith("exe"))
+                                    Process.Start(file);//TODO: console screen will dissapear immediately
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    }
+                }
+            }
+        }
+        #endregion
+
+
+        #region write exam eval stuff to file
+        private void WriteEvalStuffToFile(string result, SolutionVM SolutionName)
         {
+            //TODO: sanitize stuff so no ';' are inside the stuff to write away
 
             if (File.Exists(evalfilepath))
             {
                 //TODO: write stuff away
-                int line = GetLineNumber(File.ReadAllText(evalfilepath), solution.FolderName.ToString());
+                int line = GetLineNumber(File.ReadAllText(evalfilepath), SolutionName.PathToSln);
                 if (line != -1)
                 {
                     if (MessageBox.Show("bestaat al... now what? Overwrite?", "Oei", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
                         File_DeleteLine(line, evalfilepath);
-                        WriteResultLine(result, evalfilepath, solution);
+                        WriteResultLine(result, evalfilepath, SolutionName);
 
                     }
                 }
                 {
-                    WriteResultLine(result, evalfilepath, solution);
+                    WriteResultLine(result, evalfilepath, SolutionName);
                 }
             }
             else
             {
-                WriteResultLine(result, evalfilepath, solution);
+                WriteResultLine(result, evalfilepath, SolutionName);
             }
         }
 
-        private static void WriteResultLine(string result, string evalfilepath, SolutionMeta sol)
+        private static void WriteResultLine(string result, string evalfilepath, SolutionVM sol)
         {
             var f = File.AppendText(evalfilepath);
             f.WriteLine(result);
@@ -380,6 +384,24 @@ namespace FastSolutionEvaluator
             sol.IsEvaled = true;
 
 
+        }
+
+        string File_ReturnLine(string Line, string path)
+        {
+            using (StreamReader sr = new StreamReader(path))
+            {
+                int Countup = 0;
+                while (!sr.EndOfStream)
+                {
+                    Countup++;
+                    string line = sr.ReadLine();
+                    if (line.Contains(Line))
+                    {
+                        return line;
+                    }
+                }
+            }
+            return "";
         }
 
         void File_DeleteLine(int Line, string Path)
@@ -409,7 +431,7 @@ namespace FastSolutionEvaluator
                 sw.Write(sb.ToString());
             }
         }
-        public  int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)
+        public int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)
         {
             int lineNum = 0;
             using (StringReader reader = new StringReader(text))
@@ -424,38 +446,112 @@ namespace FastSolutionEvaluator
             }
             return -1;
         }
+        #endregion
 
-        private void ResetState()
+        private void lbFilesInProj_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            chkbUI.IsChecked = false;
-            chkbUI2.IsChecked = false;
-            chkbFlow1.IsChecked = false;
-            chkbFlow2.IsChecked = false;
-            chkbFlow3.IsChecked = false;
-            chkbMethode1.IsChecked = false;
-            chkbMethode2.IsChecked = false;
-            chkbMethode3.IsChecked = false;
-            chkbMethode4.IsChecked = false;
-            chkbMethode5.IsChecked = false;
-            chkbMethode6.IsChecked = false;
-            chkbMethode7.IsChecked = false;
-            chkbLoop1.IsChecked = false;
-            chkbReset1.IsChecked = false;
-            chkbReset2.IsChecked = false;
-            chkbReset3.IsChecked = false;
-            chkbReset4.IsChecked = false;
-            chkbPro1.IsChecked = false;
-            chkbPro2.IsChecked = false;
+            if (lbFilesInProj.SelectedIndex != -1)
+            {
+                //AvalaonEdit not very bindable :/
+                fileView.Load((lbFilesInProj.SelectedItem as FileVM).Path);
+                fileView.SyntaxHighlighting = (lbFilesInProj.SelectedItem as FileVM).ViewerType;
+            }
         }
 
-        bool evalstuffchanged = false;
-        private void chkbUI_Click(object sender, RoutedEventArgs e)
+        #region rightclick context menu
+        private void OpenSolutionInVS_Click(object sender, RoutedEventArgs e)
         {
-            evalstuffchanged = true;
+            if (lbSLNS.SelectedItem != null)
+                Process.Start((lbSLNS.SelectedItem as SolutionVM).PathToSln);
+        }
+
+        private void OpenSolutionInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedItem != null)
+                Process.Start(System.IO.Path.GetDirectoryName((lbSLNS.SelectedItem as SolutionVM).PathToSln));
+        }
+
+        private void OpenProjectInVS_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbPROJS.SelectedItem != null)
+                Process.Start((lbPROJS.SelectedItem as ProjectVM).Project.Project.FullPath);
+        }
+        private void OpenProjectInExplorer_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbPROJS.SelectedItem != null)
+                Process.Start((lbPROJS.SelectedItem as ProjectVM).Project.Project.DirectoryPath);
+        }
+
+        private void OpenFileInDefault_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbFilesInProj.SelectedItem != null)
+                Process.Start((lbFilesInProj.SelectedItem as FileVM).Path);
+        }
+
+        private void OpenFileInNotepad_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbFilesInProj.SelectedItem != null)
+                Process.Start("notepad.exe", (lbFilesInProj.SelectedItem as FileVM).Path);
+        }
+        #endregion
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.F5:
+                    OpenSolutionInVS_Click(this, null);
+                    break;
+
+            }
+        }
+
+
+        private void lbSLNS_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lbSLNS.SelectedIndex > -1)
+            {
+                //Clear ExamUI stuff 
+                ClearExamUIControls();
+
+                //Load scores?
+                TryLoadScores(lbSLNS.SelectedItem as SolutionVM);
+            }
+        }
+
+        private void TryLoadScores(SolutionVM solutionVM)
+        {
+            if (File.Exists(evalfilepath))
+            {
+                string line = File_ReturnLine(solutionVM.PathToSln, evalfilepath);
+                if (line != "")
+                {
+                    //MessageBox.Show(line);
+                    //Get the results
+                    var csvsplit = line.Split(';');
+                    int count = 0;
+                    foreach (var item in ExamVragenLijstUI.Items)
+                    {
+                        //TODO: complete me!
+                        if (item is Control)
+                        {
+                            if (item is CheckBox)
+                            {
+                                if (csvsplit[count+1] != "0")
+                                    (item as CheckBox).IsChecked = true;
+                            }
+                            count++;
+                        }
+                    }
+
+                }
+
+            }
+
         }
     }
-
-
-
-
 }
+
+
+
+
+

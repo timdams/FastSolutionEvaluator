@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
-        Title="Fast Solution Evaluator" Height="900" Width="1500" Loaded="Window_Loaded">
+        Title="Fast Solution Evaluator" Height="900" Width="1500" Loaded="Window_Loaded" KeyUp="Window_KeyUp">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -14,26 +14,15 @@
             <Button Margin="10" ToolTip="Select folder to load solutions from" Name="btnLoad" Click="btnLoad_Click">
                 <Image Source="folder.png" MaxHeight="50"  ></Image>
             </Button>
-            <Button Margin="10" Name="tryRunBtn" ToolTip="Try to compile the (console) application" Click="TryRunBtn_OnClick">
+
+            <Button Margin="10" Name="trycompileandRun" ToolTip="Try to compile the application" 
+                    ToolTipService.ShowOnDisabled="True" 
+                    Click="trycompileandRun_Click">
                 <Button.Style>
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
-                     Value="-1">
-                                <Setter Property="Button.IsEnabled" Value="false"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                <Image Source="compile.jpg" MaxHeight="50"  ></Image>
-            </Button>
-            <Button Margin="10" Name="trycompileandRun" ToolTip="Try to compile the application" Click="trycompileandRun_Click">
-                <Button.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -42,12 +31,12 @@
                 </Button.Style>
                 <Image Source="buildall.png" MaxHeight="50"  ></Image>
             </Button>
-            <Button Margin="10" Name="btnStartDebugExe" Click="btnStartDebugExe_Click" ToolTip="Try running the bin\debug(or release) exe" >
+            <Button Margin="10" Name="btnStartDebugExe" Click="btnStartDebugExe_Click" ToolTipService.ShowOnDisabled="True" ToolTip="Try running the bin\debug(or release) exe" >
                 <Button.Style>
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -56,12 +45,12 @@
                 </Button.Style>
                 <Image Source="play.png" MaxHeight="50"  ></Image>
             </Button>
-            <Button Margin="10" Name="btnOpenInVS" ToolTip="Open the solution in VS" Click="btnOpenInVS_Click">
+            <Button Margin="10" Name="btnOpenInVS" ToolTip="Open the solution in VS" ToolTipService.ShowOnDisabled="True" Click="btnOpenInVS_Click">
                 <Button.Style>
                     <Style>
                         <Style.Triggers>
                             <DataTrigger 
-                     Binding ="{Binding ElementName=lbFilesInSLN, Path=SelectedIndex}" 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
                      Value="-1">
                                 <Setter Property="Button.IsEnabled" Value="false"/>
                             </DataTrigger>
@@ -70,36 +59,98 @@
                 </Button.Style>
                 <Image Source="vs.png" MaxHeight="50"  ></Image>
             </Button>
+            <Button Margin="10" Name="btnOpenExamBuilder" Click="btnOpenExamBuilder_Click">EXAMBUILDER</Button>
         </StackPanel>
         <Grid Grid.Row="1">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="0.3*"></ColumnDefinition>
+                <ColumnDefinition Width="0.7*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
 
             </Grid.ColumnDefinitions>
-            <ListBox Name="lbSLNS" SelectionChanged="LbSLNS_OnSelectionChanged">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}"  ></Image>
-                            <Image MaxHeight="20" Source="grade.jpg" Visibility="{Binding HasGradeVisibile}"  ></Image>
+            <ListBox Name="lbSLNS" SelectionChanged="lbSLNS_SelectionChanged" >
+                <ListBox.Resources>
 
-                            <TextBlock Text="{Binding FolderName}"></TextBlock>
+                    <!--Defines a context menu-->
+                    <ContextMenu x:Key="MyElementMenu">
+                        <MenuItem Header="Open in Visual Studio" Click="OpenSolutionInVS_Click"/>
+                        <MenuItem Header="Open in Explorer" Click="OpenSolutionInExplorer_Click"/>
+                    </ContextMenu>
+
+                    <!--Sets a context menu for each ListBoxItem in the current ListBox-->
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource MyElementMenu}"/>
+                    </Style>
+
+                </ListBox.Resources>
+                <ListBox.ItemTemplate>
+                    <DataTemplate >
+                        <StackPanel ToolTip="{Binding FolderName}" Orientation="Horizontal">
+                            <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}" ToolTip="No exe found in debug or release folder"  ></Image>
+                            <Image MaxHeight="20" Source="grade.jpg" Visibility="{Binding IsEvaledVis}" ToolTip="Already has a grade"  ></Image>
+                            <!--<Image MaxHeight="20" Source="errors.png" Visibility="{Binding HasExceptions}"  ></Image>-->
+                            <TextBlock Text="{Binding SolutionName}"></TextBlock>
+                            <TextBlock FontSize="8" Text="{Binding FolderName}"></TextBlock>
 
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <ListBox Name="lbPROJS" Grid.Column="1" SelectionChanged="LbPROJS_OnSelectionChanged"></ListBox>
-            <ListBox Name="lbFilesInSLN" Grid.Column="2" SelectionChanged="LbFilesInSLN_OnSelectionChanged"></ListBox>
+            <ListBox Name="lbPROJS" Grid.Column="1" DataContext="{Binding ElementName=lbSLNS, Path=SelectedItem}" ItemsSource="{Binding Projects}" >
+                <ListBox.Resources>
+
+                    <!--Defines a context menu-->
+                    <ContextMenu x:Key="MyElementMenu">
+                        <MenuItem Header="Open in Visual Studio" Click="OpenProjectInVS_Click"/>
+                        <MenuItem Header="Open in Explorer" Click="OpenProjectInExplorer_Click"/>
+                    </ContextMenu>
+
+                    <!--Sets a context menu for each ListBoxItem in the current ListBox-->
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource MyElementMenu}"/>
+                    </Style>
+
+                </ListBox.Resources>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding ProjectName, Mode=OneWay}"  ></TextBlock>
+                    </DataTemplate>
+                    
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ListBox Name="lbFilesInProj" Grid.Column="2" ItemsSource="{Binding ElementName=lbPROJS, Path=SelectedItem.RelevantFiles}" SelectionChanged="lbFilesInProj_SelectionChanged">
+                <ListBox.Resources>
+
+                    <!--Defines a context menu-->
+                    <ContextMenu x:Key="MyElementMenu">
+                        <MenuItem Header="Open [will open in default program, usually Visual Studio]" Click="OpenFileInDefault_Click"/>
+                        <MenuItem Header="Open in notepad" Click="OpenFileInNotepad_Click"/>
+                    </ContextMenu>
+
+                    <!--Sets a context menu for each ListBoxItem in the current ListBox-->
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource MyElementMenu}"/>
+                    </Style>
+
+                </ListBox.Resources>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Label Content="{Binding Name}" ></Label>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
             <!--<ScrollViewer Grid.Column="3" VerticalScrollBarVisibility="Visible"><TextBlock Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" ></TextBlock>
             </ScrollViewer>-->
 
-            <avalon:TextEditor Grid.Column="3"   Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" ></avalon:TextEditor>
+            <avalon:TextEditor Grid.Column="3"  SyntaxHighlighting="auto"
+                               Name="fileView" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" 
+                               WordWrap="True" ShowLineNumbers="True" IsReadOnly="True" 
+                              
+                               />
             <Grid Name="evalGrid" Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"></RowDefinition>
@@ -113,47 +164,8 @@
 
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0">
-                    <TextBlock FontWeight="Bold">Inleiding UI (1p)</TextBlock>
-                    <CheckBox Name="chkbUI" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Hoofdmodule en resetknop IsEnabled, rest niet</CheckBox>
-                    <CheckBox Name="chkbUI2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Gebruikt groupboxes</CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="1">
-                    <TextBlock FontWeight="Bold">Moduleflow (4p)</TextBlock>
-                    <CheckBox Name="chkbFlow1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bestel frietjes wordt actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbFlow2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bestel drank wordt actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbFlow3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bereken totaal actief indien nodig</CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="2">
-                    <TextBlock FontWeight="Bold">Methoden berekenprijs (6p)</TextBlock>
-                    <CheckBox Name="chkbMethode1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Methode "BerekenTotaalPrijs(string hamburger, int aantalfrietjes, string drank){}</CheckBox>
-                    <CheckBox Name="chkbMethode2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">2 optionele parameters (aantalfriets=0, drank="geen")</CheckBox>
-                    <CheckBox Name="chkbMethode3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Bereken totaal actief indien nodig</CheckBox>
-                    <CheckBox Name="chkbMethode4" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Wordt aangeroepen vanuit BerekenTotaal knop</CheckBox>
-                    <CheckBox Name="chkbMethode5" Checked="chkbUI_Click" Unchecked="chkbUI_Click">5€ korting bij frisdrank én frietjes</CheckBox>
-                    <CheckBox Name="chkbMethode6" Checked="chkbUI_Click" Unchecked="chkbUI_Click">3€ korting bij water én vegie én 1 frietje</CheckBox>
-                    <CheckBox Name="chkbMethode7" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Fishburger+ fanta+ 3 frietjes geeft 9euro</CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="3">
-                    <TextBlock FontWeight="Bold">Frietjesloop (4p)</TextBlock>
-                    <CheckBox Name="chkbLoop1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Gebruikt loop om frietjes -1 tot 1 frietje te tonen</CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="4">
-                    <TextBlock FontWeight="Bold">Resetknop (1p)</TextBlock>
-                    <CheckBox Name="chkbReset1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Alle selecties van checkbox en radiobuttons weg</CheckBox>
-                    <CheckBox Name="chkbReset2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Aantal frietjes op 5</CheckBox>
-                    <CheckBox Name="chkbReset3" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Terug 5 frietjes</CheckBox>
-                    <CheckBox Name="chkbReset4" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Alle modules disables behalve hoofdmodule </CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="5">
-                    <TextBlock FontWeight="Bold">Pro 1 (1p)</TextBlock>
-                    <CheckBox Name="chkbPro1" Checked="chkbUI_Click" Unchecked="chkbUI_Click">BerekenTotaal enkel actief indien alles correct werd ingevuld</CheckBox>
-                </StackPanel>
-                <StackPanel Grid.Row="6">
-                    <TextBlock FontWeight="Bold" >Pro 2 (2p)</TextBlock>
-                    <CheckBox Name="chkbPro2" Checked="chkbUI_Click" Unchecked="chkbUI_Click">Visuele weergave van menu</CheckBox>
-                </StackPanel>
-                <Button Name="writeResult" Grid.Row="7" Click="writeResult_Click" Margin="5" FontSize="25" FontWeight="Bold">Schrijf weg</Button>
+                <ListBox Grid.Row="0" Name="ExamVragenLijstUI">
+                </ListBox>
             </Grid>
 
 
