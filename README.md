@@ -9,8 +9,6 @@ One usefull additional experimental branche exist:
 # Wishlist
 * Icon
 * Countdown: shows how many projects are already evaluated 
-* Dynamic checkboxes, based from XML file
-* Read already evaluated results and parse to the checkboxes
 * Redo datamodel of evaluation stuff
 * Go for full mvvm (byebye "SelectedItem as SolutionMeta"
 * Add "comments" textbox in evaluation part and also write it to the file
@@ -20,10 +18,12 @@ One usefull additional experimental branche exist:
 * Also allow solutionless projects to be added to the list.
 * Posibility to map folder to studentname (and remember that mapping) in case a student f$$$ed up his foldernaming
 * Use GUID as main identifcation (primary key), just make sure no duplicates exist. 
-- Add option to ignore GUI to previous part in case teacher is correcting a solution that has same GUID (because he gave a template solution to start with for example)
+- Add option to ignore GUID to previous part in case teacher is correcting a solution that has same GUID (because he gave a template solution to start with for example)
 * Highlight code to annotate (and save in resulting evaluation file)
 
 # Done from wishlist
 * Redo datamodel of project/solutions: now it's all file-based, but it'll be more robus if I parse the .sln/.csproj files and use that information
 * Add "open in explorer" button for each folder
 * Push F5 to start current project
+* Dynamic checkboxes/evaluation, based from XML file
+* Read already evaluated results and parse to the checkboxes
