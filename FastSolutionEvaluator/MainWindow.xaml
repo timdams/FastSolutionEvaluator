@@ -88,11 +88,12 @@
                 </ListBox.Resources>
                 <ListBox.ItemTemplate>
                     <DataTemplate >
-                        <StackPanel ToolTip="{Binding SolutionName}" Orientation="Horizontal">
+                        <StackPanel ToolTip="{Binding FolderName}" Orientation="Horizontal">
                             <Image MaxHeight="20" Source="missing.png" Visibility="{Binding HasNoExeVisibile}" ToolTip="No exe found in debug or release folder"  ></Image>
                             <Image MaxHeight="20" Source="grade.jpg" Visibility="{Binding IsEvaledVis}" ToolTip="Already has a grade"  ></Image>
                             <!--<Image MaxHeight="20" Source="errors.png" Visibility="{Binding HasExceptions}"  ></Image>-->
                             <TextBlock Text="{Binding SolutionName}"></TextBlock>
+                            <TextBlock FontSize="8" Text="{Binding FolderName}"></TextBlock>
 
                         </StackPanel>
                     </DataTemplate>

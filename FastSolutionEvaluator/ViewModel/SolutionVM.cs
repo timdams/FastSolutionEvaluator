@@ -39,6 +39,13 @@ namespace FastSolutionEvaluator.ViewModel
             // set { SetProperty(ref _firstName, value); }
         }
 
+        public string FolderName
+        {
+            get
+            {
+                return Path.GetFileName(Path.GetDirectoryName(solution.PathToSln));
+            }
+        }
 
         private List<ProjectVM> projects;
         public List<ProjectVM> Projects
