@@ -236,8 +236,11 @@ namespace FastSolutionEvaluator
                     if (selsol.BestExePath != "null")
                         try
                         {
-                            ConsoleOutputAndLogger log = new ConsoleOutputAndLogger(selsol.BestExePath, "test.log");
-                            log.Run();
+                            //TODO: if( only with console)
+                            ConsoleWindow wnd = new ConsoleWindow();
+                            wnd.PathToProc = selsol.BestExePath;
+                            wnd.Show();
+                            //TODO: ELSE
                             // var Proc = Process.Start(selsol.BestExePath);
 
                         }

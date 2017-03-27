@@ -12,9 +12,14 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <con:ConsoleControl></con:ConsoleControl>
-        <StackPanel Grid.Row="1">
+        <con:ConsoleControl Name="consolectrl" ></con:ConsoleControl>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <TextBox MinWidth="190" Name="txbInput"> </TextBox> 
+            <Button Name="btnWriteToConsole" Click="btnWriteToConsole_Click" IsDefault="True">Write</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="2">
             <Button Name="btnClose" Click="btnClose_Click">Close</Button>
         </StackPanel>
     </Grid>

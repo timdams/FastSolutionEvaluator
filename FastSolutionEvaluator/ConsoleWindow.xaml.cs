@@ -31,7 +31,23 @@ namespace FastSolutionEvaluator
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (PathToProc != null && PathToProc != "")
+            {
+                consolectrl.IsInputEnabled = true;
+                
+                consolectrl.StartProcess(PathToProc, "");
 
+                txbInput.Focus();
+                
+            }
+        }
+        public string PathToProc { get; set; }
+
+        private void btnWriteToConsole_Click(object sender, RoutedEventArgs e)
+        {
+            consolectrl.WriteInput(txbInput.Text, Colors.Yellow, true);
+            txbInput.Text = "";
+            txbInput.Focus();
         }
     }
 }

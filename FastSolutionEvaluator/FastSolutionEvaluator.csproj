@@ -97,7 +97,6 @@
     </Compile>
     <Compile Include="SolutionClasses.cs" />
     <Compile Include="utility\AvalonHelper.cs" />
-    <Compile Include="utility\ConsoleOutPotAndLogger.cs" />
     <Compile Include="utility\msbuild\MSBuildLogger.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\FileVM.cs" />
