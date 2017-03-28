@@ -89,7 +89,7 @@ namespace FastSolutionEvaluator
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
 
-                List<SolutionVM> allslns = SolutionsVM.Load(dialog.SelectedPath);
+                List<SolutionVM> allslns = SolutionsVM.Load(dialog.SelectedPath).OrderBy(p=>p.SolutionName).ToList();
 
                 lbSLNS.ItemsSource = allslns;
 
@@ -366,7 +366,7 @@ namespace FastSolutionEvaluator
 
                     }
                 }
-                {
+                else{
                     WriteResultLine(result, evalfilepath, SolutionName);
                 }
             }
@@ -547,6 +547,29 @@ namespace FastSolutionEvaluator
 
             }
 
+        }
+
+        private void btnShowGitK_Click(object sender, RoutedEventArgs e)
+        {
+            if (lbSLNS.SelectedIndex != -1)
+            {
+
+                //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
+                //
+                string debugp = (lbSLNS.SelectedItem as SolutionVM).PathToSln;
+                try
+                {
+                   var path= System.IO.Path.GetDirectoryName(debugp);
+                  
+                    var psi = new ProcessStartInfo("gitk");
+                    psi.WorkingDirectory = path;
+                    Process.Start(psi);
+                }
+                catch (Exception ex)
+                {
+                    lbLog.Items.Insert(0, ex.Message);
+                }
+            }
         }
     }
 }

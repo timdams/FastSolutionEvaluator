@@ -59,6 +59,20 @@
                 </Button.Style>
                 <Image Source="vs.png" MaxHeight="50"  ></Image>
             </Button>
+            <Button Margin="10" Name="btnShowGitK" ToolTip="Show gitlog" ToolTipService.ShowOnDisabled="True" Click="btnShowGitK_Click">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger 
+                     Binding ="{Binding ElementName=lbSLNS, Path=SelectedIndex}" 
+                     Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="false"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Image Source="gitlogo.png" MaxHeight="50"  ></Image>
+            </Button>
             <Button Margin="10" Name="btnOpenExamBuilder" Click="btnOpenExamBuilder_Click">EXAMBUILDER</Button>
         </StackPanel>
         <Grid Grid.Row="1">
