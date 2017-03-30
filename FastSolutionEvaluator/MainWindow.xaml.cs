@@ -48,7 +48,7 @@ namespace FastSolutionEvaluator
         {
             WindowState = WindowState.Maximized;
         }
-
+        List<SolutionVM> allslns = null;
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
 
@@ -89,7 +89,7 @@ namespace FastSolutionEvaluator
                 Properties.Settings.Default.LastPath = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
 
-                List<SolutionVM> allslns = SolutionsVM.Load(dialog.SelectedPath).OrderBy(p=>p.SolutionName).ToList();
+              allslns  = SolutionsVM.Load(dialog.SelectedPath).OrderBy(p=>p.SolutionName).ToList();
 
                 lbSLNS.ItemsSource = allslns;
 
@@ -105,6 +105,7 @@ namespace FastSolutionEvaluator
                             solution.IsEvaled = true;
                     }
                 }
+                UpdateCountdown();
             }
             //Show it
 
@@ -376,14 +377,24 @@ namespace FastSolutionEvaluator
             }
         }
 
-        private static void WriteResultLine(string result, string evalfilepath, SolutionVM sol)
+        private  void WriteResultLine(string result, string evalfilepath, SolutionVM sol)
         {
             var f = File.AppendText(evalfilepath);
             f.WriteLine(result);
             f.Close();
             sol.IsEvaled = true;
 
+            //UPdate status
+            this.UpdateCountdown();
 
+        }
+
+        private  void UpdateCountdown()
+        {
+            int total = allslns.Count;
+            int evaled = allslns.Where(p => p.IsEvaled).Count();
+
+            txbStatus.Text = $"{evaled}/{total}";
         }
 
         string File_ReturnLine(string Line, string path)

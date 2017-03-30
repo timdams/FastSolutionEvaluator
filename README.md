@@ -7,6 +7,8 @@ One usefull additional experimental branche exist:
 	*ConsoleControl: utilizes a control to show output of compiled project (buggy: crashes when second program is run)
 
 # Wishlist
+* Take regular backups of evalscoresfiles
+* Sommige dubbel tonen als tester maar onder random naam (uit lijst). Indien te harde afwijking tegenover de originele , de tester waarschuwen 
 * Icon
 * Countdown: shows how many projects are already evaluated 
 * Redo datamodel of evaluation stuff
