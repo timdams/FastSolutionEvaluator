@@ -6,7 +6,15 @@ Little WPF tool to rapidly browse subdirectories containing csharp code (handy i
 One usefull additional experimental branche exist:
 	*ConsoleControl: utilizes a control to show output of compiled project (buggy: crashes when second program is run)
 
+# Bugs
+Moving folder to new location (or opening on other pc, but same dropbox) will kill the connections. Folder path saved in .csv file should be relative to this file.
+
+Currently doesn't work with VS2017 projects. See wishlist point one for possible fix ;)
+	
 # Wishlist
+* Move project loading to roslyn code analyzer?
+* Fix bug when loading other folder after having already opened one
+* Select correct file/project when clicking on other solution (now shows files from previous selection)
 * Take regular backups of evalscoresfiles
 * Sommige dubbel tonen als tester maar onder random naam (uit lijst). Indien te harde afwijking tegenover de originele , de tester waarschuwen 
 * Icon

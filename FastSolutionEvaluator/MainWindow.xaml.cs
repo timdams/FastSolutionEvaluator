@@ -282,8 +282,14 @@ namespace FastSolutionEvaluator
 
         private void trycompileandRun_Click(object sender, RoutedEventArgs e)
         {
+
+            //TODO: programma crasht indien \temp niet bestaat
             if (lbSLNS.SelectedIndex != -1)
             {
+                try
+                {
+
+               
                 ProjectVM selsol = null;
                 //MessageBox.Show((lbSLNS.SelectedItem as SolutionMeta).FullPath+"\\"+lbPROJS.SelectedItem + "\\bin\\debug\\"+lbPROJS.SelectedItem+".exe");
                 //
@@ -298,6 +304,7 @@ namespace FastSolutionEvaluator
                     string temppath = Environment.CurrentDirectory + "\\temp";
                     //Clean temp folder:
                     Directory.Delete(temppath, true); //TODO: is dit veilig???!
+                        //TODO: nieuwe build vinden want oa $ notatie faalt
                     string mspath = $"\"C:\\Program Files (x86)\\MSBuild\\12.0\\Bin\\msbuild.exe\"  \"{selsol.Project.Project.FullPath}\" /p:OutDir=\"{temppath}\"";
                     //string mspath = "msbuild";
 
@@ -343,6 +350,12 @@ namespace FastSolutionEvaluator
                     {
                         MessageBox.Show("FAIL:" + sb.ToString().Split(new string[] { "Build FAILED" }, StringSplitOptions.None).Last(), "FAILURE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
+                }
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Big fail" + ex.Message) ;
                 }
             }
         }
@@ -451,7 +464,7 @@ namespace FastSolutionEvaluator
                 while ((line = reader.ReadLine()) != null)
                 {
                     lineNum++;
-                    if (line.Contains(lineToFind))
+                    if (line.ToLower().Contains(lineToFind.ToLower()))
                         return lineNum;
                 }
             }
