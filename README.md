@@ -14,11 +14,9 @@ Currently doesn't work with VS2017 projects. See wishlist point one for possible
 # Wishlist
 * Move project loading to roslyn code analyzer?
 * Fix bug when loading other folder after having already opened one
-* Select correct file/project when clicking on other solution (now shows files from previous selection)
 * Take regular backups of evalscoresfiles
 * Sommige dubbel tonen als tester maar onder random naam (uit lijst). Indien te harde afwijking tegenover de originele , de tester waarschuwen 
 * Icon
-* Countdown: shows how many projects are already evaluated 
 * Redo datamodel of evaluation stuff
 * Go for full mvvm (byebye "SelectedItem as SolutionMeta"
 * Add "comments" textbox in evaluation part and also write it to the file
@@ -32,6 +30,8 @@ Currently doesn't work with VS2017 projects. See wishlist point one for possible
 * Highlight code to annotate (and save in resulting evaluation file)
 
 # Done from wishlist
+* Select correct file/project when clicking on other solution (now shows files from previous selection)
+* Countdown: shows how many projects are already evaluated 
 * Redo datamodel of project/solutions: now it's all file-based, but it'll be more robus if I parse the .sln/.csproj files and use that information
 * Add "open in explorer" button for each folder
 * Push F5 to start current project

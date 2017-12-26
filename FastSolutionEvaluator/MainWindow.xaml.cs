@@ -534,6 +534,9 @@ namespace FastSolutionEvaluator
         {
             if (lbSLNS.SelectedIndex > -1)
             {
+                lbFilesInProj.SelectedIndex = -1;
+                lbPROJS.SelectedIndex = -1;
+                fileView.Clear();
                 //Clear ExamUI stuff 
                 ClearExamUIControls();
 
