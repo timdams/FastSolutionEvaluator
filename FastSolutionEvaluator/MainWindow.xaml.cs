@@ -1,33 +1,14 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.CSharp;
-using Microsoft.Win32;
-using System.Windows.Markup;
-using Microsoft.Build.Evaluation;
-using Microsoft.Build.Execution;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using ICSharpCode.AvalonEdit.Highlighting;
-using FastSolutionEvaluator.utility.msbuild;
 using FastSolutionEvaluator.ViewModel;
 using FastSolutionEvaluator.ExamBuilderClasses;
-using FastSolutionEvaluator.utility;
 
 namespace FastSolutionEvaluator
 {
